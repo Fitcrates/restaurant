@@ -23,43 +23,47 @@ export default function FinalScene({ lang, heading, subtitle }: FinalSceneProps)
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
-    const headingEl = scene.querySelector('.scene-final__heading');
-    const subEl = scene.querySelector('.scene-final__sub');
+    const ctx = gsap.context(() => {
+      const headingEl = scene.querySelector('.scene-final__heading');
+      const subEl = scene.querySelector('.scene-final__sub');
 
-    if (headingEl) {
-      gsap.fromTo(headingEl,
-        { opacity: 0, y: 80, scale: 0.92 },
-        {
-          opacity: 1, y: 0, scale: 1,
-          duration: 1.6,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: headingEl,
-            start: 'top 80%',
-            once: true,
-            toggleActions: 'play none none none',
-          },
-        }
-      );
-    }
+      if (headingEl) {
+        gsap.fromTo(headingEl,
+          { opacity: 0, y: 80 },
+          {
+            opacity: 1, y: 0,
+            duration: 1.6,
+            ease: 'power3.out',
+            clearProps: 'opacity,y,transform',
+            scrollTrigger: {
+              trigger: headingEl,
+              start: 'top 80%',
+              once: true,
+            },
+          }
+        );
+      }
 
-    if (subEl) {
-      gsap.fromTo(subEl,
-        { opacity: 0, y: 30 },
-        {
-          opacity: 1, y: 0,
-          duration: 1.2,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: subEl,
-            start: 'top 85%',
-            once: true,
-            toggleActions: 'play none none none',
-          },
-          delay: 0.2,
-        }
-      );
-    }
+      if (subEl) {
+        gsap.fromTo(subEl,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1, y: 0,
+            duration: 1.2,
+            ease: 'power3.out',
+            delay: 0.2,
+            clearProps: 'opacity,y,transform',
+            scrollTrigger: {
+              trigger: subEl,
+              start: 'top 85%',
+              once: true,
+            },
+          }
+        );
+      }
+    }, sceneRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (

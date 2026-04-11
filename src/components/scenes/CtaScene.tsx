@@ -63,17 +63,26 @@ export default function CtaScene({
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
-    const els = scene.querySelectorAll('.scene-cta__heading, .reservation-form, .scene-cta__info');
-    els.forEach((el, i) => {
-      gsap.fromTo(el,
-        { opacity: 0, y: 30 },
-        {
-          opacity: 1, y: 0, duration: 1, ease: 'power3.out',
-          delay: i * 0.15,
-          scrollTrigger: { trigger: el, start: 'top 85%' },
-        },
-      );
-    });
+    const ctx = gsap.context(() => {
+      const els = scene.querySelectorAll('.scene-cta__heading, .reservation-form, .scene-cta__info');
+      els.forEach((el, i) => {
+        gsap.fromTo(el,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1, y: 0, duration: 1, ease: 'power3.out',
+            delay: i * 0.15,
+            clearProps: 'opacity,y,transform',
+            scrollTrigger: {
+              trigger: el,
+              start: 'top 85%',
+              once: true,
+            },
+          },
+        );
+      });
+    }, sceneRef);
+
+    return () => ctx.revert();
   }, []);
 
   /* ── Client-side validation ── */

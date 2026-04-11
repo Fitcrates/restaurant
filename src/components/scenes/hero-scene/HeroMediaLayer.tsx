@@ -14,19 +14,19 @@ export default function HeroMediaLayer({
   scrubVideoRef,
 }: HeroMediaLayerProps) {
   // Position offset (in pixels) to shift the video
-  const scrubOffsetX = -10;
+  const scrubOffsetX = -20;
   const scrubOffsetY = 0;
 
   // Perspective tilt (in degrees) to match camera angle
   const scrubPerspective = 1000;
-  const scrubTiltX = 10; // Rotate forward/backward (try 1 or -1)
+  const scrubTiltX = 5; // Rotate forward/backward (try 1 or -1)
   const scrubTiltY = 0; // Rotate left/right
 
   // Origin point for the tilt. 'top center' pins the top edge so it doesn't lower/create gaps!
   const scrubTransformOrigin = 'center center';
 
   // Scale multiplier to hide any bottom/side gaps caused by heavy tilting
-  const scrubScale = 0.95;
+  const scrubScale = 0.99;
 
   return (
     <>

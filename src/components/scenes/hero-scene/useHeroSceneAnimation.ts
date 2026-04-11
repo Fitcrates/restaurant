@@ -79,8 +79,9 @@ export default function useHeroSceneAnimation({
       standby.currentTime = 0;
       standby.play().catch(() => {});
 
+      // Long cinematic cross-dissolve: 2s overlap sells the infinite loop
       const tl = gsap.timeline({
-        defaults: { duration: 0.38, ease: 'sine.inOut' },
+        defaults: { duration: 2, ease: 'power1.inOut' },
         onComplete: () => {
           active.pause();
           active.currentTime = 0;
@@ -89,7 +90,9 @@ export default function useHeroSceneAnimation({
         },
       });
 
-      tl.to(standby, { opacity: 1 }, 0).to(active, { opacity: 0 }, 0);
+      // Fade standby up first (brief overlap at full opacity sells continuity)
+      tl.to(standby, { opacity: 1, duration: 1.6 }, 0)
+        .to(active, { opacity: 0, duration: 1.8 }, 0.4);
     };
 
     if (prefersReducedMotion) {
@@ -139,7 +142,7 @@ export default function useHeroSceneAnimation({
             active &&
             active.duration > 0 &&
             !isLoopCrossfadingRef.current &&
-            active.currentTime >= active.duration - 0.3
+            active.currentTime >= active.duration - 2.5
           ) {
             startLoopCrossfade();
           }
@@ -280,7 +283,8 @@ export default function useHeroSceneAnimation({
             break;
           }
           case 'crossfade': {
-            gsap.set(loopStack, { opacity: 1 - localProgress, scale: 1.003 + localProgress * 0.003 });
+            // Hold loopStack at 1 while scrub fades in over it to prevent dark overlay dip
+            gsap.set(loopStack, { opacity: 1, scale: 1.003 + localProgress * 0.003 });
             gsap.set(scrub, { opacity: localProgress, scale: 1.003 + localProgress * 0.003 });
             gsap.set(gradientRef.current, { opacity: 1.2 + localProgress * 0.25 });
             gsap.set(vignetteRef.current, { opacity: 1.3 + localProgress * 0.2 });

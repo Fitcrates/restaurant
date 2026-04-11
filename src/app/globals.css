@@ -302,6 +302,30 @@ video {
   padding-bottom: 0.9rem;
 }
 
+.mobile-nav__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mobile-nav__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.mobile-nav__close:hover {
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+}
+
 .mobile-nav__brand {
   font-size: 0.72rem;
   letter-spacing: 0.18em;
@@ -608,7 +632,11 @@ video {
   }
 
   .hero-text-inner {
-    padding-block: clamp(3rem, 6vh, 4.5rem);
+    padding-block: clamp(5rem, 10vh, 6rem) clamp(3rem, 6vh, 4.5rem);
+  }
+
+  .hero-brand-line {
+    margin-top: 0.5rem;
   }
 
   .hero-subtitle-line {
@@ -889,10 +917,12 @@ video {
 
 .scene-chaos {
   position: relative;
+  z-index: 1;
   min-height: 90svh;
   display: flex;
   align-items: center;
   overflow: hidden;
+  background-color: var(--bg-base);
 }
 
 .scene-chaos__bg {
@@ -964,6 +994,12 @@ video {
 /* =============================================
    SCENE 6 — DISHES (HORIZONTAL SCROLL)
    ============================================= */
+
+.scene-dishes-wrapper {
+  position: relative;
+  z-index: 2;
+  background-color: var(--bg-base);
+}
 
 .scene-dishes {
   position: relative;
@@ -1650,6 +1686,86 @@ video {
 .site-footer__copy {
   font-size: 0.7rem;
   color: var(--text-muted);
+}
+
+/* =============================================
+   PRIVACY POLICY PAGE
+   ============================================= */
+
+.privacy-policy {
+  min-height: 100svh;
+  padding: clamp(7rem, 12vh, 10rem) var(--space-x) var(--space-scene);
+}
+
+.privacy-policy__container {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.privacy-policy__back {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 3rem;
+  transition: color 0.3s ease;
+}
+
+.privacy-policy__back:hover {
+  color: var(--accent-warm);
+}
+
+.privacy-policy__title {
+  font-weight: 800;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.privacy-policy__updated {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-bottom: 4rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.privacy-policy__section {
+  margin-bottom: 3rem;
+}
+
+.privacy-policy__heading {
+  font-weight: 600;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.privacy-policy__body {
+  font-weight: 300;
+  font-size: 0.95rem;
+  line-height: 1.85;
+  color: var(--text-secondary);
+}
+
+.privacy-policy__body p {
+  margin-bottom: 1rem;
+  white-space: pre-line;
+}
+
+.privacy-policy__body p:last-child {
+  margin-bottom: 0;
+}
+
+.privacy-policy__body strong {
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
 /* =============================================

@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { d } from '@/lib/utils/i18n';
 
 interface NavbarProps {
@@ -53,18 +53,41 @@ export default function Navbar({ lang }: NavbarProps) {
     };
   }, [mobileOpen]);
 
+  /** Handle nav link clicks — #hero scrolls to very top of page */
+  const handleNavClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href === '#hero') {
+      e.preventDefault();
+      setMobileOpen(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    setMobileOpen(false);
+  }, []);
+
   return (
     <>
       <header className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
         <div className="navbar__left">
           {navItems.map((item) => (
-            <Link key={item.href} href={item.href} className="navbar__link">
+            <Link
+              key={item.href}
+              href={item.href}
+              className="navbar__link"
+              onClick={(e) => handleNavClick(e, item.href)}
+            >
               {item.label}
             </Link>
           ))}
         </div>
 
-        <Link href={`/${currentLang}`} className="navbar__brand">
+        <Link
+          href={`/${currentLang}`}
+          className="navbar__brand"
+          onClick={(e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+        >
           {'HWA / \u706B'}
         </Link>
 
@@ -99,9 +122,21 @@ export default function Navbar({ lang }: NavbarProps) {
       >
         <div className="mobile-nav__header">
           <span className="mobile-nav__brand">{'HWA / \u706B'}</span>
-          <Link href={switchRoute} className="mobile-nav__lang" onClick={() => setMobileOpen(false)}>
-            {currentLang === 'en' ? 'PL' : 'EN'}
-          </Link>
+          <div className="mobile-nav__header-actions">
+            <Link href={switchRoute} className="mobile-nav__lang" onClick={() => setMobileOpen(false)}>
+              {currentLang === 'en' ? 'PL' : 'EN'}
+            </Link>
+            <button
+              type="button"
+              className="mobile-nav__close"
+              aria-label="Close menu"
+              onClick={() => setMobileOpen(false)}
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <nav className="mobile-nav__links">
@@ -110,7 +145,7 @@ export default function Navbar({ lang }: NavbarProps) {
               key={item.href}
               href={item.href}
               className="mobile-nav__link"
-              onClick={() => setMobileOpen(false)}
+              onClick={(e) => handleNavClick(e, item.href)}
             >
               {item.label}
             </Link>
@@ -120,3 +155,4 @@ export default function Navbar({ lang }: NavbarProps) {
     </>
   );
 }
+

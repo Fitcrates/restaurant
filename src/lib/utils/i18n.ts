@@ -142,7 +142,7 @@ const dict: Dict = {
     /* ── Hero ── */
     'hero.tagline': 'HWA / 火',
     'hero.brandSub': 'Koreański Grill Premium',
-    'hero.word1': 'SUROWE.',
+    'hero.word1': 'ESENCJA.',
     'hero.word2': 'OGIEŃ.',
     'hero.word3': 'DUSZA.',
     'hero.word4': 'SMAK.',
@@ -163,7 +163,7 @@ const dict: Dict = {
     /* ── Process ── */
     'process.step1.title': 'OGIEŃ',
     'process.step1.desc': 'Węgiel drzewny binchotan z wielowiekowych japońskich pieców. Czyste, naturalne ciepło, które pozwala składnikowi przemówić.',
-    'process.step2.title': 'SKŁADNIK',
+    'process.step2.title': 'SKŁADNIKI',
     'process.step2.desc': '45-dniowe dojrzewanie. Wieprzowina z górskich hodowli. Każdy składnik jest wyselekcjonowany, nigdy przypadkowy.',
     'process.step3.title': 'PRECYZJA',
     'process.step3.desc': 'Temperatura, czas, grubość — kontrolowane co do stopnia. Grill jest naszym instrumentem, nie narzędziem.',

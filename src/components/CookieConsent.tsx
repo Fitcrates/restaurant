@@ -64,6 +64,9 @@ export default function CookieConsent({ lang }: { lang: string }) {
           onClick={handleDecline}
           aria-label={isPl ? 'Odrzuć pliki cookie' : 'Decline cookies'}
           style={{
+            fontFamily: 'inherit',
+            minWidth: '120px',
+            textAlign: 'center',
             backgroundColor: 'transparent',
             color: 'var(--text-secondary, #a8a29e)',
             border: '1px solid var(--border-subtle, #555)',
@@ -82,6 +85,9 @@ export default function CookieConsent({ lang }: { lang: string }) {
           onClick={handleAccept}
           aria-label={isPl ? 'Akceptuj pliki cookie' : 'Accept cookies'}
           style={{
+            fontFamily: 'inherit',
+            minWidth: '120px',
+            textAlign: 'center',
             backgroundColor: 'var(--text-primary, #f5f0e8)',
             color: 'var(--bg-base, #0a0a0a)',
             border: 'none',

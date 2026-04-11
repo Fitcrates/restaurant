@@ -61,8 +61,7 @@ export default function DishesScene({ lang, heading, dishes }: DishesSceneProps)
             start: 'top top',
             end: () => `+=${getScrollWidth()}`,
             scrub: 1,
-            pin: scene,
-            anticipatePin: 1,
+            pin: true,
             invalidateOnRefresh: true,
           },
         });
