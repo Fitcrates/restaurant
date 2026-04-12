@@ -70,15 +70,12 @@ export default function HeroMediaLayer({
         <video
           ref={scrubVideoRef}
           poster="/hero-poster.jpg"
-          autoPlay
           muted
           playsInline
           preload="auto"
           className="hero-canvas hero-canvas--scrub"
           onLoadedData={(event) => {
-            const v = event.target as HTMLVideoElement;
-            v.pause();
-            v.currentTime = 0.001;
+            (event.target as HTMLVideoElement).currentTime = 0.001;
           }}
         >
           <source src="/meatFlipNew.webm" type="video/webm" />
