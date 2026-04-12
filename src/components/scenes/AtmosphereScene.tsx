@@ -62,7 +62,7 @@ export default function AtmosphereScene({ lang, heading, subtitle, imageUrl }: A
         <img
           ref={imageRef}
           className="scene-atmosphere__image"
-          src={imageUrl || '/webp/atmosphere1.webp'}
+          src={imageUrl || '/webp/atmosphere1 (1).webp'}
           alt="Restaurant atmosphere"
           loading="lazy"
         />
