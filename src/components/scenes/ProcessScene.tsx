@@ -81,33 +81,70 @@ export default function ProcessScene({ lang, steps }: ProcessSceneProps) {
 
   return (
     <div ref={sceneRef} className="scene-process" id="process">
-      <div className="scene-process__sticky-wrap">
-        <div className="scene-process__left">
-          {processSteps.map((step, i) => (
-            <div key={i} className={`scene-process__step ${i === 0 ? 'is-active' : ''}`}>
-              <div className="scene-process__step-number">
-                {String(i + 1).padStart(2, '0')}
+      {/* DESKTOP VIEW */}
+      <div className="scene-process__desktop">
+        <div className="scene-process__sticky-wrap">
+          <div className="scene-process__left">
+            {processSteps.map((step, i) => (
+              <div key={i} className={`scene-process__step ${i === 0 ? 'is-active' : ''}`}>
+                <div className="scene-process__step-number">
+                  {String(i + 1).padStart(2, '0')}
+                </div>
+                <h3 className="scene-process__step-title">{step.title}</h3>
+                <p className="scene-process__step-desc">{step.description}</p>
               </div>
-              <h3 className="scene-process__step-title">{step.title}</h3>
-              <p className="scene-process__step-desc">{step.description}</p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
 
-        <div className="scene-process__right">
-          {processSteps.map((step, i) => (
-            <div key={i} className="scene-process__image-panel">
+          <div className="scene-process__right">
+            {processSteps.map((step, i) => (
+              <div key={i} className="scene-process__image-panel">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  className="scene-process__image"
+                  src={step.imageUrl || '/dish.png'}
+                  alt={step.title}
+                  loading="lazy"
+                />
+                <div className="scene-process__image-overlay" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* MOBILE STACKING CARDS VIEW */}
+      <div className="scene-process__mobile">
+        {processSteps.map((step, i) => (
+          <div 
+            key={i} 
+            className="scene-process__mobile-card" 
+            style={{ zIndex: i + 1 }}
+          >
+            <div className="scene-process__mobile-card-image-wrap">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                className="scene-process__image"
+                className="scene-process__mobile-card-image"
                 src={step.imageUrl || '/dish.png'}
                 alt={step.title}
                 loading="lazy"
               />
-              <div className="scene-process__image-overlay" />
+              <div className="scene-process__mobile-card-overlay" />
             </div>
-          ))}
-        </div>
+            
+            <div className="scene-process__mobile-card-content">
+              <div className="scene-process__step-number" style={{ marginBottom: '1rem' }}>
+                {String(i + 1).padStart(2, '0')}
+              </div>
+              <h3 className="scene-process__step-title" style={{ fontSize: '2.5rem', marginBottom: '1.25rem' }}>
+                {step.title}
+              </h3>
+              <p className="scene-process__step-desc" style={{ fontSize: '1rem', marginBottom: 0 }}>
+                {step.description}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

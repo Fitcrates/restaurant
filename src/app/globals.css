@@ -22,7 +22,13 @@
 
   --space-x: clamp(1.5rem, 5vw, 5rem);
   --space-y: clamp(6rem, 12vh, 12rem);
-  --space-scene: clamp(8rem, 16vh, 16rem);
+  /* 
+   * --space-scene controls the vertical padding between major scenes.
+   * To adjust mobile spacing: modify the first value (e.g., 2rem is 1/4 of the old 8rem).
+   * To adjust desktop spacing: modify the third value (e.g., 16rem).
+   * To adjust scaling rate: modify the middle viewport value (e.g., 8vh).
+   */
+  --space-scene: clamp(2rem, 8vh, 16rem);
 }
 
 /* =============================================
@@ -46,7 +52,7 @@ body {
   background-color: var(--bg-base);
   color: var(--text-primary);
   font-family: var(--font-suit);
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -884,30 +890,60 @@ video {
   z-index: 1;
 }
 
+.scene-process__mobile {
+  display: none;
+}
+
 @media (max-width: 768px) {
-  .scene-process__sticky-wrap {
-    grid-template-columns: 1fr;
+  .scene-process__desktop {
+    display: none;
   }
 
-  .scene-process__left {
-    position: relative;
-    height: auto;
-    min-height: auto;
-    padding-bottom: 2rem;
+  .scene-process__mobile {
+    display: block;
+    padding-bottom: var(--space-scene);
   }
 
-  .scene-process__step {
-    position: relative;
-    top: auto;
-    left: auto;
-    right: auto;
-    transform: none;
-    opacity: 1;
-    margin-bottom: 4rem;
+  .scene-process__mobile-card {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    width: 100%;
+    overflow: hidden;
+    will-change: transform;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
   }
 
-  .scene-process__image-panel {
-    height: 50svh;
+  .scene-process__mobile-card-image-wrap {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .scene-process__mobile-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .scene-process__mobile-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10, 10, 10, 0.95) 0%, rgba(10, 10, 10, 0.5) 40%, transparent 100%);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .scene-process__mobile-card-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: var(--space-x);
+    padding-bottom: clamp(4rem, 12vh, 8rem);
+    z-index: 2;
   }
 }
 
