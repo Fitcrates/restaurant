@@ -26,47 +26,51 @@ export default function ChaosScene({ lang, bigText1, bigText2, bigText3, smallTe
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
-    const blocks = scene.querySelectorAll('.scene-chaos__text-block');
+    const ctx = gsap.context(() => {
+      const blocks = scene.querySelectorAll('.scene-chaos__text-block');
 
-    blocks.forEach((block) => {
-      const isRight = block.classList.contains('scene-chaos__text-block--right');
-      const isCenter = block.classList.contains('scene-chaos__text-block--center');
-      const fromX = isCenter ? 0 : isRight ? 24 : -24;
-      const fromY = isCenter ? 50 : 22;
+      blocks.forEach((block) => {
+        const isRight = block.classList.contains('scene-chaos__text-block--right');
+        const isCenter = block.classList.contains('scene-chaos__text-block--center');
+        const fromX = isCenter ? 0 : isRight ? 24 : -24;
+        const fromY = isCenter ? 50 : 22;
 
-      gsap.fromTo(block,
-        { opacity: 0, xPercent: fromX, y: fromY },
-        {
-          opacity: 1, xPercent: 0, y: 0,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: block,
-            start: 'top 95%',
-            end: 'top 52%',
-            scrub: 0.8,
-            invalidateOnRefresh: true,
-          },
-        }
-      );
-    });
+        gsap.fromTo(block,
+          { opacity: 0, xPercent: fromX, y: fromY },
+          {
+            opacity: 1, xPercent: 0, y: 0,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: block,
+              start: 'top 95%',
+              end: 'top 52%',
+              scrub: 0.8,
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+      });
 
-    // Parallax on background image
-    const bgImg = scene.querySelector('.scene-chaos__bg-image');
-    if (bgImg) {
-      gsap.fromTo(bgImg,
-        { scale: 1.2 },
-        {
-          scale: 1,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: scene,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true,
-          },
-        }
-      );
-    }
+      // Parallax on background image
+      const bgImg = scene.querySelector('.scene-chaos__bg-image');
+      if (bgImg) {
+        gsap.fromTo(bgImg,
+          { scale: 1.2 },
+          {
+            scale: 1,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: scene,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: true,
+            },
+          }
+        );
+      }
+    }, sceneRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (

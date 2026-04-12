@@ -53,18 +53,21 @@ export default function DishesScene({ lang, heading, dishes }: DishesSceneProps)
         // Calculate scrollWidth dynamically in functions to avoid stale closures
         const getScrollWidth = () => track.scrollWidth - window.innerWidth + 100;
 
-        gsap.to(track, {
-          x: () => -getScrollWidth(),
-          ease: 'none',
-          scrollTrigger: {
-            trigger: wrapper,
-            start: 'top top',
-            end: () => `+=${getScrollWidth()}`,
-            scrub: 1,
-            pin: true,
-            invalidateOnRefresh: true,
-          },
-        });
+        gsap.fromTo(track,
+          { x: 0 },
+          {
+            x: () => -getScrollWidth(),
+            ease: 'none',
+            scrollTrigger: {
+              trigger: wrapper,
+              start: 'top top',
+              end: () => `+=${getScrollWidth()}`,
+              scrub: 1,
+              pin: true,
+              invalidateOnRefresh: true,
+            },
+          }
+        );
       });
     }, wrapperRef);
 

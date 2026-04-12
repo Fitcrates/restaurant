@@ -14,9 +14,8 @@ export default function Navbar({ lang }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const currentLang = lang || (pathname.startsWith('/pl') ? 'pl' : 'en');
-  const targetLang = currentLang === 'en' ? 'pl' : 'en';
-  const switchRoute = pathname.replace(`/${currentLang}`, `/${targetLang}`);
+  const currentLang = lang || (pathname.startsWith('/pl') ? 'pl' : pathname.startsWith('/ko') ? 'ko' : 'en');
+  const availableLangs = ['en', 'pl', 'ko'];
 
   const navItems = [
     { href: '#hero', label: d('nav.fire', currentLang) },
@@ -92,9 +91,20 @@ export default function Navbar({ lang }: NavbarProps) {
         </Link>
 
         <div className="navbar__right">
-          <Link href={switchRoute} className="navbar__lang">
-            {currentLang === 'en' ? 'PL' : 'EN'}
-          </Link>
+          <div className="navbar__lang" style={{ display: 'flex', gap: '0.75rem' }}>
+            {availableLangs.map(l => (
+              <Link
+                key={l}
+                href={pathname.replace(`/${currentLang}`, `/${l}`)}
+                style={{
+                  color: currentLang === l ? 'var(--text-primary)' : 'var(--text-secondary)',
+                  pointerEvents: currentLang === l ? 'none' : 'auto'
+                }}
+              >
+                {l.toUpperCase()}
+              </Link>
+            ))}
+          </div>
           <button
             type="button"
             className={`navbar__burger ${mobileOpen ? 'is-open' : ''}`}
@@ -123,9 +133,21 @@ export default function Navbar({ lang }: NavbarProps) {
         <div className="mobile-nav__header">
           <span className="mobile-nav__brand">{'HWA / \u706B'}</span>
           <div className="mobile-nav__header-actions">
-            <Link href={switchRoute} className="mobile-nav__lang" onClick={() => setMobileOpen(false)}>
-              {currentLang === 'en' ? 'PL' : 'EN'}
-            </Link>
+            <div className="mobile-nav__lang" style={{ display: 'flex', gap: '0.75rem' }}>
+              {availableLangs.map(l => (
+                <Link
+                  key={l}
+                  href={pathname.replace(`/${currentLang}`, `/${l}`)}
+                  onClick={() => setMobileOpen(false)}
+                  style={{
+                    color: currentLang === l ? 'var(--text-primary)' : 'var(--text-secondary)',
+                    pointerEvents: currentLang === l ? 'none' : 'auto'
+                  }}
+                >
+                  {l.toUpperCase()}
+                </Link>
+              ))}
+            </div>
             <button
               type="button"
               className="mobile-nav__close"
