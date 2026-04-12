@@ -13,6 +13,14 @@ export default function HeroMediaLayer({
   loopStackRef,
   scrubVideoRef,
 }: HeroMediaLayerProps) {
+  const applySafariSafeVideoFlags = (video: HTMLVideoElement) => {
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.setAttribute('playsinline', 'true');
+    video.setAttribute('webkit-playsinline', 'true');
+  };
+
   // Position offset (in pixels) to shift the video
   const scrubOffsetX = 0;
   const scrubOffsetY = 0;
@@ -35,23 +43,49 @@ export default function HeroMediaLayer({
           ref={loopVideoARef}
           poster="/hero-poster.jpg"
           autoPlay
+          loop
           muted
           playsInline
-          preload="auto"
+          preload="metadata"
+          controls={false}
+          disablePictureInPicture
+          controlsList="nodownload noplaybackrate noremoteplayback"
+          onLoadedMetadata={(event) => {
+            applySafariSafeVideoFlags(event.currentTarget);
+          }}
+          onEnded={(event) => {
+            const video = event.currentTarget;
+            video.currentTime = 0;
+            void video.play().catch(() => {});
+          }}
           className="hero-canvas hero-canvas--loop-a"
         >
           <source src="/noChpsticks.webm" type="video/webm" />
+          <source src="/Nochopsticks.mp4" type="video/mp4" />
         </video>
         <video
           ref={loopVideoBRef}
           poster="/hero-poster.jpg"
           autoPlay
+          loop
           muted
           playsInline
-          preload="auto"
+          preload="metadata"
+          controls={false}
+          disablePictureInPicture
+          controlsList="nodownload noplaybackrate noremoteplayback"
+          onLoadedMetadata={(event) => {
+            applySafariSafeVideoFlags(event.currentTarget);
+          }}
+          onEnded={(event) => {
+            const video = event.currentTarget;
+            video.currentTime = 0;
+            void video.play().catch(() => {});
+          }}
           className="hero-canvas hero-canvas--loop-b"
         >
           <source src="/noChpsticks.webm" type="video/webm" />
+          <source src="/Nochopsticks.mp4" type="video/mp4" />
         </video>
       </div>
       {/* Wrapper protects our offset/tilt from being overwritten by GSAP's native scale updates */}
@@ -72,13 +106,19 @@ export default function HeroMediaLayer({
           poster="/hero-poster.jpg"
           muted
           playsInline
-          preload="auto"
+          preload="metadata"
+          controls={false}
+          disablePictureInPicture
+          controlsList="nodownload noplaybackrate noremoteplayback"
           className="hero-canvas hero-canvas--scrub"
-          onLoadedData={(event) => {
-            (event.target as HTMLVideoElement).currentTime = 0.001;
+          onLoadedMetadata={(event) => {
+            const video = event.currentTarget;
+            applySafariSafeVideoFlags(video);
+            video.currentTime = 0.001;
           }}
         >
           <source src="/meatFlipNew.webm" type="video/webm" />
+          <source src="/meatflip (1).mp4" type="video/mp4" />
         </video>
       </div>
     </>

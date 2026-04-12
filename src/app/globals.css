@@ -426,6 +426,12 @@ video {
   opacity: 0;
 }
 
+.hero-scrub-wrapper {
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  contain: paint;
+}
+
 /* Single container for all hero overlays + text */
 .hero-stage {
   position: absolute;

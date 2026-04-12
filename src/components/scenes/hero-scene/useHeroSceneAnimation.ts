@@ -40,12 +40,17 @@ export default function useHeroSceneAnimation({
   const isScrubSmoothingActiveRef = useRef(false);
   const scrollVelocityRef = useRef(0);
   const rafIdRef = useRef(0);
+  const lastWebkitSeekAtRef = useRef(0);
 
   useLayoutEffect(() => {
     const scene = sceneRef.current;
     if (!scene) return;
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isWebkit =
+      typeof navigator !== 'undefined' &&
+      /WebKit/i.test(navigator.userAgent) &&
+      !/Chrome|CriOS|EdgiOS/i.test(navigator.userAgent);
 
     const getLoops = () => [loopVideoARef.current, loopVideoBRef.current] as const;
 
@@ -61,11 +66,13 @@ export default function useHeroSceneAnimation({
       const standby = activeLoopIndexRef.current === 0 ? b : a;
       if (!active || !standby) return;
 
+      active.loop = true;
+      standby.loop = true;
       gsap.set(active, { opacity: 1, scale: 1 });
       gsap.set(standby, { opacity: 0, scale: 1 });
       standby.pause();
       standby.currentTime = 0;
-      active.play().catch(() => {});
+      active.play().catch(() => { });
     };
 
     const startLoopCrossfade = () => {
@@ -77,7 +84,7 @@ export default function useHeroSceneAnimation({
 
       isLoopCrossfadingRef.current = true;
       standby.currentTime = 0;
-      standby.play().catch(() => {});
+      standby.play().catch(() => { });
 
       // Long cinematic cross-dissolve: 2s overlap sells the infinite loop
       const tl = gsap.timeline({
@@ -149,19 +156,26 @@ export default function useHeroSceneAnimation({
         }
 
         if (scrub && isScrubSmoothingActiveRef.current) {
-          const duration = scrub.duration || 0;
+          if (scrub.readyState < 2) {
+            rafIdRef.current = requestAnimationFrame(tick);
+            return;
+          }
+
+          const duration = scrub.duration && isFinite(scrub.duration) ? scrub.duration : 4.0;
           if (duration > 0) {
-            const safeTarget = clamp(targetTimeRef.current, 0, Math.max(duration - 0.001, 0));
+            const safeEnd = Math.max(duration - (isWebkit ? 0.06 : 0.001), 0);
+            const safeTarget = clamp(targetTimeRef.current, 0, safeEnd);
             const delta = safeTarget - scrub.currentTime;
-            
-            // WebKit (Safari, iOS) drops video decoder frames when rapidly
-            // toggling play() and pause() during scroll. Chromium handles it perfectly.
-            const isWebkit = typeof navigator !== 'undefined' && /WebKit/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent);
 
             if (isWebkit) {
-              if (Math.abs(delta) > 0.01) {
+              const now = performance.now();
+              const minSeekIntervalMs = scrollVelocityRef.current > 1200 ? 20 : 34;
+              if (Math.abs(delta) > 0.018 && now - lastWebkitSeekAtRef.current >= minSeekIntervalMs) {
                 if (!scrub.paused) scrub.pause();
-                scrub.currentTime = safeTarget;
+                const maxStep = scrollVelocityRef.current > 1400 ? 0.16 : 0.085;
+                const nextTime = scrub.currentTime + clamp(delta, -maxStep, maxStep);
+                scrub.currentTime = clamp(nextTime, 0, safeEnd);
+                lastWebkitSeekAtRef.current = now;
               }
             } else {
               const speed = scrollVelocityRef.current;
@@ -172,7 +186,7 @@ export default function useHeroSceneAnimation({
                 }
               } else if (delta > 0.01) {
                 scrub.playbackRate = clamp(1 + delta * 6.5, 1, 5);
-                if (scrub.paused) scrub.play().catch(() => {});
+                if (scrub.paused) scrub.play().catch(() => { });
               } else if (delta < -0.05) {
                 scrub.pause();
                 scrub.currentTime = safeTarget;
@@ -224,7 +238,7 @@ export default function useHeroSceneAnimation({
 
       function handlePhaseChange(prev: HeroPhase, next: HeroPhase) {
         const scrub = scrubVideoRef.current;
-        const scrubDuration = scrub?.duration || 0;
+        const scrubDuration = scrub?.duration && isFinite(scrub.duration) ? scrub.duration : 4.0;
 
         switch (next) {
           case 'intro': {
@@ -247,6 +261,7 @@ export default function useHeroSceneAnimation({
             idleLoopEnabledRef.current = false;
             isScrubSmoothingActiveRef.current = true;
             scrollVelocityRef.current = 0;
+            lastWebkitSeekAtRef.current = 0;
             pauseAllLoops();
             if (scrub) {
               if (prev === 'crossfade' || prev === 'intro') scrub.currentTime = 0.001;
@@ -258,11 +273,12 @@ export default function useHeroSceneAnimation({
             idleLoopEnabledRef.current = false;
             isScrubSmoothingActiveRef.current = true;
             scrollVelocityRef.current = 0;
+            lastWebkitSeekAtRef.current = 0;
             pauseAllLoops();
             if (scrub) {
               scrub.pause();
               if (scrubDuration > 0) {
-                targetTimeRef.current = Math.max(scrubDuration - 0.001, 0);
+                targetTimeRef.current = Math.max(scrubDuration - (isWebkit ? 0.06 : 0.001), 0);
               }
             }
             break;
@@ -304,7 +320,7 @@ export default function useHeroSceneAnimation({
             break;
           }
           case 'flip': {
-            const duration = scrub.duration || 0;
+            const duration = scrub.duration && isFinite(scrub.duration) ? scrub.duration : 4.0;
             if (duration > 0) {
               targetTimeRef.current = duration * localProgress;
             }

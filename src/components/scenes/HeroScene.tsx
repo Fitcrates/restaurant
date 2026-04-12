@@ -29,9 +29,38 @@ export default function HeroScene({ lang, heading, tagline, subtitle }: HeroScen
   const smokeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (loopVideoARef.current && loopVideoARef.current.paused) {
-      loopVideoARef.current.play().catch(() => {});
-    }
+    const loopA = loopVideoARef.current;
+    const loopB = loopVideoBRef.current;
+
+    const normalizeVideo = (video: HTMLVideoElement) => {
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.setAttribute('playsinline', 'true');
+      video.setAttribute('webkit-playsinline', 'true');
+    };
+
+    const tryPlay = (video: HTMLVideoElement | null) => {
+      if (!video) return;
+      normalizeVideo(video);
+      if (video.paused) {
+        void video.play().catch(() => {});
+      }
+    };
+
+    const ensurePlayback = () => {
+      tryPlay(loopA);
+      tryPlay(loopB);
+    };
+
+    ensurePlayback();
+    document.addEventListener('visibilitychange', ensurePlayback);
+    window.addEventListener('pageshow', ensurePlayback);
+
+    return () => {
+      document.removeEventListener('visibilitychange', ensurePlayback);
+      window.removeEventListener('pageshow', ensurePlayback);
+    };
   }, []);
 
   useHeroSceneAnimation({
