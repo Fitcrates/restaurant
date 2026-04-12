@@ -1,4 +1,5 @@
 export type HeroPhase = 'intro' | 'crossfade' | 'flip' | 'hold' | 'exit';
+export const HERO_SCRUB_FPS = 30;
 
 type PhaseRange = {
   start: number;
@@ -42,14 +43,24 @@ export const getPhase = (progress: number): HeroPhase => {
 export const getFlipTargetTime = (localProgress: number, duration: number) => {
   const p = clamp01(localProgress);
   const safeEnd = Math.max(duration - 0.001, 0);
+  const eased = p < 0.5
+    ? 4 * p * p * p
+    : 1 - Math.pow(-2 * p + 2, 3) / 2;
 
-  if (p <= 0.2) {
-    return mapRange(p, 0, 0.2, 0, safeEnd * 0.2);
+  if (eased <= 0.18) {
+    return mapRange(eased, 0, 0.18, 0, safeEnd * 0.16);
   }
 
-  if (p <= 0.8) {
-    return mapRange(p, 0.2, 0.8, safeEnd * 0.2, safeEnd * 0.8);
+  if (eased <= 0.82) {
+    return mapRange(eased, 0.18, 0.82, safeEnd * 0.16, safeEnd * 0.84);
   }
 
-  return mapRange(p, 0.8, 1, safeEnd * 0.8, safeEnd);
+  return mapRange(eased, 0.82, 1, safeEnd * 0.84, safeEnd);
+};
+
+export const quantizeTimeToFrame = (time: number, fps: number, safeEnd: number) => {
+  if (fps <= 0) return Math.max(0, Math.min(time, safeEnd));
+  const frameDuration = 1 / fps;
+  const frameIndex = Math.round(time / frameDuration);
+  return Math.max(0, Math.min(frameIndex * frameDuration, safeEnd));
 };

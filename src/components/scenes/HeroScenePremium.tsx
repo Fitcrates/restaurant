@@ -2,19 +2,24 @@
 
 import React, { useEffect, useRef } from 'react';
 
-import HeroMediaLayer from './hero-scene/HeroMediaLayer';
+import HeroMediaLayerPremium from './hero-scene/HeroMediaLayerPremium';
 import HeroOverlayLayer from './hero-scene/HeroOverlayLayer';
 import HeroTextLayer from './hero-scene/HeroTextLayer';
-import useHeroSceneAnimation from './hero-scene/useHeroSceneAnimation';
+import useHeroSceneAnimationPremium from './hero-scene/useHeroSceneAnimationPremium';
 
-interface HeroSceneProps {
+interface HeroScenePremiumProps {
   lang: string;
   heading?: string;
   tagline?: string;
   subtitle?: string;
 }
 
-export default function HeroScene({ lang, heading, tagline, subtitle }: HeroSceneProps) {
+export default function HeroScenePremium({
+  lang,
+  heading,
+  tagline,
+  subtitle,
+}: HeroScenePremiumProps) {
   const sceneRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
@@ -22,7 +27,7 @@ export default function HeroScene({ lang, heading, tagline, subtitle }: HeroScen
   const loopVideoARef = useRef<HTMLVideoElement>(null);
   const loopVideoBRef = useRef<HTMLVideoElement>(null);
   const loopStackRef = useRef<HTMLDivElement>(null);
-  const scrubVideoRef = useRef<HTMLVideoElement>(null);
+  const featureVideoRef = useRef<HTMLVideoElement>(null);
   const gradientRef = useRef<HTMLDivElement>(null);
   const exitRef = useRef<HTMLDivElement>(null);
   const vignetteRef = useRef<HTMLDivElement>(null);
@@ -31,7 +36,7 @@ export default function HeroScene({ lang, heading, tagline, subtitle }: HeroScen
   useEffect(() => {
     const loopA = loopVideoARef.current;
     const loopB = loopVideoBRef.current;
-    const scrub = scrubVideoRef.current;
+    const feature = featureVideoRef.current;
 
     const normalizeVideo = (video: HTMLVideoElement) => {
       video.muted = true;
@@ -52,9 +57,7 @@ export default function HeroScene({ lang, heading, tagline, subtitle }: HeroScen
     const ensurePlayback = () => {
       tryPlay(loopA);
       tryPlay(loopB);
-      if (scrub) {
-        normalizeVideo(scrub);
-      }
+      if (feature) normalizeVideo(feature);
     };
 
     ensurePlayback();
@@ -67,12 +70,12 @@ export default function HeroScene({ lang, heading, tagline, subtitle }: HeroScen
     };
   }, []);
 
-  useHeroSceneAnimation({
+  useHeroSceneAnimationPremium({
     sceneRef,
     loopVideoARef,
     loopVideoBRef,
     loopStackRef,
-    scrubVideoRef,
+    featureVideoRef,
     gradientRef,
     exitRef,
     vignetteRef,
@@ -81,11 +84,11 @@ export default function HeroScene({ lang, heading, tagline, subtitle }: HeroScen
 
   return (
     <section ref={sceneRef} className="hero-scene" id="hero" aria-label={heading || undefined}>
-      <HeroMediaLayer
+      <HeroMediaLayerPremium
         loopVideoARef={loopVideoARef}
         loopVideoBRef={loopVideoBRef}
         loopStackRef={loopStackRef}
-        scrubVideoRef={scrubVideoRef}
+        featureVideoRef={featureVideoRef}
       />
 
       <div ref={stageRef} className="hero-stage">

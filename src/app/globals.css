@@ -393,6 +393,7 @@ video {
   height: 100svh;
   width: 100%;
   overflow: hidden;
+  isolation: isolate;
 }
 
 .hero-canvas {
@@ -427,9 +428,31 @@ video {
 }
 
 .hero-scrub-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
   backface-visibility: hidden;
-  transform-style: preserve-3d;
-  contain: paint;
+  transform: translateZ(0);
+  contain: layout paint style;
+}
+
+.hero-sequence-layer {
+  overflow: hidden;
+}
+
+.hero-sequence-canvas {
+  opacity: 0;
+}
+
+.hero-sequence-source {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  left: -9999px;
+  top: -9999px;
 }
 
 /* Single container for all hero overlays + text */

@@ -1,19 +1,21 @@
 import React from 'react';
 
-type HeroMediaLayerProps = {
+type HeroMediaLayerSequenceProps = {
   loopVideoARef: React.RefObject<HTMLVideoElement | null>;
   loopVideoBRef: React.RefObject<HTMLVideoElement | null>;
   loopStackRef: React.RefObject<HTMLDivElement | null>;
-  scrubVideoRef: React.RefObject<HTMLVideoElement | null>;
+  featureVideoRef: React.RefObject<HTMLVideoElement | null>;
+  featureCanvasRef: React.RefObject<HTMLCanvasElement | null>;
 };
 
-export default function HeroMediaLayer({
+export default function HeroMediaLayerSequence({
   loopVideoARef,
   loopVideoBRef,
   loopStackRef,
-  scrubVideoRef,
-}: HeroMediaLayerProps) {
-  const applySafariSafeVideoFlags = (video: HTMLVideoElement) => {
+  featureVideoRef,
+  featureCanvasRef,
+}: HeroMediaLayerSequenceProps) {
+  const applyVideoFlags = (video: HTMLVideoElement) => {
     video.muted = true;
     video.defaultMuted = true;
     video.playsInline = true;
@@ -35,19 +37,13 @@ export default function HeroMediaLayer({
           controls={false}
           disablePictureInPicture
           controlsList="nodownload noplaybackrate noremoteplayback"
-          onLoadedMetadata={(event) => {
-            applySafariSafeVideoFlags(event.currentTarget);
-          }}
-          onEnded={(event) => {
-            const video = event.currentTarget;
-            video.currentTime = 0;
-            void video.play().catch(() => {});
-          }}
+          onLoadedMetadata={(event) => applyVideoFlags(event.currentTarget)}
           className="hero-canvas hero-canvas--loop-a"
         >
           <source src="/noChpsticks.webm" type="video/webm" />
           <source src="/Nochopsticks.mp4" type="video/mp4" />
         </video>
+
         <video
           ref={loopVideoBRef}
           poster="/hero-poster.jpg"
@@ -59,24 +55,18 @@ export default function HeroMediaLayer({
           controls={false}
           disablePictureInPicture
           controlsList="nodownload noplaybackrate noremoteplayback"
-          onLoadedMetadata={(event) => {
-            applySafariSafeVideoFlags(event.currentTarget);
-          }}
-          onEnded={(event) => {
-            const video = event.currentTarget;
-            video.currentTime = 0;
-            void video.play().catch(() => {});
-          }}
+          onLoadedMetadata={(event) => applyVideoFlags(event.currentTarget)}
           className="hero-canvas hero-canvas--loop-b"
         >
           <source src="/noChpsticks.webm" type="video/webm" />
           <source src="/Nochopsticks.mp4" type="video/mp4" />
         </video>
       </div>
-      {/* Wrapper protects our offset/tilt from being overwritten by GSAP's native scale updates */}
-      <div className="hero-scrub-wrapper">
+
+      <div className="hero-scrub-wrapper hero-sequence-layer">
+        <canvas ref={featureCanvasRef} className="hero-canvas hero-sequence-canvas" />
         <video
-          ref={scrubVideoRef}
+          ref={featureVideoRef}
           poster="/hero-poster.jpg"
           muted
           playsInline
@@ -84,15 +74,13 @@ export default function HeroMediaLayer({
           controls={false}
           disablePictureInPicture
           controlsList="nodownload noplaybackrate noremoteplayback"
-          className="hero-canvas hero-canvas--scrub"
+          className="hero-sequence-source"
           onLoadedMetadata={(event) => {
             const video = event.currentTarget;
-            applySafariSafeVideoFlags(video);
+            applyVideoFlags(video);
             video.currentTime = 0.001;
           }}
-          onCanPlay={(event) => {
-            applySafariSafeVideoFlags(event.currentTarget);
-          }}
+          onCanPlay={(event) => applyVideoFlags(event.currentTarget)}
         >
           <source src="/meatflip (1).mp4" type="video/mp4" />
           <source src="/meatFlipNew.webm" type="video/webm" />

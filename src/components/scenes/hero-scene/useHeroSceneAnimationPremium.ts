@@ -15,44 +15,42 @@ import {
 
 gsap.registerPlugin(ScrollTrigger);
 
-type UseHeroSceneAnimationParams = {
+type UseHeroSceneAnimationPremiumParams = {
   sceneRef: React.RefObject<HTMLElement | null>;
   loopVideoARef: React.RefObject<HTMLVideoElement | null>;
   loopVideoBRef: React.RefObject<HTMLVideoElement | null>;
   loopStackRef: React.RefObject<HTMLDivElement | null>;
-  scrubVideoRef: React.RefObject<HTMLVideoElement | null>;
+  featureVideoRef: React.RefObject<HTMLVideoElement | null>;
   gradientRef: React.RefObject<HTMLDivElement | null>;
   exitRef: React.RefObject<HTMLDivElement | null>;
   vignetteRef: React.RefObject<HTMLDivElement | null>;
   smokeRef: React.RefObject<HTMLDivElement | null>;
 };
 
-export default function useHeroSceneAnimation({
+export default function useHeroSceneAnimationPremium({
   sceneRef,
   loopVideoARef,
   loopVideoBRef,
   loopStackRef,
-  scrubVideoRef,
+  featureVideoRef,
   gradientRef,
   exitRef,
   vignetteRef,
   smokeRef,
-}: UseHeroSceneAnimationParams) {
+}: UseHeroSceneAnimationPremiumParams) {
   const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
   const getLerpFactor = (response: number, deltaSeconds: number) =>
     1 - Math.exp(-response * Math.min(deltaSeconds, 0.05));
 
   const currentPhaseRef = useRef<HeroPhase>('intro');
-  const idleLoopEnabledRef = useRef(false);
   const activeLoopIndexRef = useRef<0 | 1>(0);
   const isLoopCrossfadingRef = useRef(false);
   const scrubTargetProgressRef = useRef(0);
   const renderedProgressRef = useRef(0);
-  const targetTimeRef = useRef(0);
-  const videoSyncTimeRef = useRef(0);
+  const videoTargetTimeRef = useRef(0);
   const rafIdRef = useRef(0);
   const lastTickAtRef = useRef(0);
-  const lastScrubSeekAtRef = useRef(0);
+  const lastFeatureSeekAtRef = useRef(0);
 
   useLayoutEffect(() => {
     const scene = sceneRef.current;
@@ -67,26 +65,20 @@ export default function useHeroSceneAnimation({
       window.matchMedia('(pointer: coarse)').matches ||
       'ontouchstart' in window;
 
-    const syncConfig = {
-      progressResponse: isWebkit ? 9 : isTouchDevice ? 12 : 17,
-      timeResponse: isWebkit ? 8 : isTouchDevice ? 12 : 16,
+    const motionConfig = {
+      progressResponse: isWebkit ? 8.5 : isTouchDevice ? 11 : 15,
+      videoResponse: isWebkit ? 7 : isTouchDevice ? 10 : 13,
       safeEndOffset: isWebkit ? 0.08 : 0.02,
-      minSeekIntervalMs: isWebkit ? 40 : isTouchDevice ? 24 : 18,
-      seekThreshold: isWebkit ? 0.2 : isTouchDevice ? 0.24 : 0.28,
-      reverseThreshold: isWebkit ? 0.08 : isTouchDevice ? 0.07 : 0.06,
-      playbackDeadzone: isWebkit ? 0.025 : isTouchDevice ? 0.02 : 0.016,
-      rateGain: isWebkit ? 1.6 : isTouchDevice ? 2 : 2.6,
-      minRate: 0.85,
-      maxRate: isWebkit ? 1.12 : isTouchDevice ? 1.32 : 1.65,
+      seekThreshold: isWebkit ? 0.28 : isTouchDevice ? 0.32 : 0.36,
+      reverseThreshold: isWebkit ? 0.1 : isTouchDevice ? 0.08 : 0.07,
+      minSeekIntervalMs: isWebkit ? 44 : isTouchDevice ? 30 : 22,
+      playbackDeadzone: isWebkit ? 0.03 : isTouchDevice ? 0.024 : 0.018,
+      maxPlaybackRate: isWebkit ? 1.1 : isTouchDevice ? 1.25 : 1.45,
+      minPlaybackRate: 0.9,
+      rateGain: isWebkit ? 1.4 : isTouchDevice ? 1.8 : 2.2,
     };
 
     const getLoops = () => [loopVideoARef.current, loopVideoBRef.current] as const;
-
-    const pauseAllLoops = () => {
-      const [a, b] = getLoops();
-      if (a && !a.paused) a.pause();
-      if (b && !b.paused) b.pause();
-    };
 
     const playActiveLoop = () => {
       const [a, b] = getLoops();
@@ -114,7 +106,7 @@ export default function useHeroSceneAnimation({
       standby.currentTime = 0;
       standby.play().catch(() => {});
 
-      const tl = gsap.timeline({
+      gsap.timeline({
         defaults: { duration: 2, ease: 'power1.inOut' },
         onComplete: () => {
           active.pause();
@@ -122,24 +114,23 @@ export default function useHeroSceneAnimation({
           activeLoopIndexRef.current = activeLoopIndexRef.current === 0 ? 1 : 0;
           isLoopCrossfadingRef.current = false;
         },
-      });
-
-      tl.to(standby, { opacity: 1, duration: 1.6 }, 0).to(active, { opacity: 0, duration: 1.8 }, 0.4);
+      })
+        .to(standby, { opacity: 1, duration: 1.6 }, 0)
+        .to(active, { opacity: 0, duration: 1.8 }, 0.4);
     };
 
-    const resetScrubVideo = (video: HTMLVideoElement | null, time = 0.001) => {
+    const resetFeatureVideo = (video: HTMLVideoElement | null, time = 0.001) => {
       if (!video) return;
       video.pause();
       video.playbackRate = 1;
       video.currentTime = time;
-      videoSyncTimeRef.current = time;
+      videoTargetTimeRef.current = time;
     };
 
     if (prefersReducedMotion) {
-      idleLoopEnabledRef.current = true;
       playActiveLoop();
       gsap.set(loopStackRef.current, { opacity: 1 });
-      gsap.set(scrubVideoRef.current, { opacity: 0 });
+      gsap.set(featureVideoRef.current, { opacity: 0 });
       gsap.set(exitRef.current, { opacity: 0 });
       gsap.set(smokeRef.current, { opacity: 0.08, y: 0 });
       gsap.set(vignetteRef.current, { opacity: 1 });
@@ -154,7 +145,7 @@ export default function useHeroSceneAnimation({
         if (loopA) {
           introTl.fromTo(
             loopA,
-            { scale: 1.003, opacity: 0 },
+            { scale: 1.004, opacity: 0 },
             { scale: 1, opacity: 1, duration: 2.2, ease: 'power2.out' },
             0
           );
@@ -164,128 +155,129 @@ export default function useHeroSceneAnimation({
         introTl.fromTo('.hero-title-word', { opacity: 0, y: 100, rotateX: 12 }, { opacity: 1, y: 0, rotateX: 0, duration: 1.3, stagger: 0.1 }, 0.4);
         introTl.fromTo('.hero-subtitle-line', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.9 }, 0.9);
         introTl.fromTo('.hero-scroll-cue', { opacity: 0 }, { opacity: 1, duration: 1 }, 1.2);
-        introTl.fromTo(gradientRef.current, { opacity: 0.3 }, { opacity: 1, duration: 2, ease: 'power1.inOut' }, 0);
       };
 
-      const syncScrubPlayback = (
-        scrub: HTMLVideoElement,
-        desiredTime: number,
-        phase: HeroPhase,
-        now: number,
-        safeEnd: number
-      ) => {
-        const currentTime = scrub.currentTime;
+      const syncFeatureVideo = (video: HTMLVideoElement, desiredTime: number, phase: HeroPhase, now: number) => {
+        const duration = video.duration && isFinite(video.duration) ? video.duration : 4;
+        const safeEnd = Math.max(duration - motionConfig.safeEndOffset, 0);
+        const currentTime = video.currentTime;
         const delta = desiredTime - currentTime;
         const absDelta = Math.abs(delta);
-        const canSeek = now - lastScrubSeekAtRef.current >= syncConfig.minSeekIntervalMs;
+        const canSeek = now - lastFeatureSeekAtRef.current >= motionConfig.minSeekIntervalMs;
+
+        if (phase === 'flip') {
+          if (delta > motionConfig.playbackDeadzone) {
+            video.playbackRate = clamp(
+              1 + delta * motionConfig.rateGain,
+              motionConfig.minPlaybackRate,
+              motionConfig.maxPlaybackRate
+            );
+            if (video.paused) void video.play().catch(() => {});
+          } else {
+            video.playbackRate = 1;
+          }
+
+          if (absDelta > motionConfig.seekThreshold && canSeek) {
+            video.currentTime = quantizeTimeToFrame(desiredTime, HERO_SCRUB_FPS, safeEnd);
+            lastFeatureSeekAtRef.current = now;
+          }
+          return;
+        }
 
         if (phase === 'hold' || phase === 'exit') {
-          if (desiredTime > currentTime + syncConfig.playbackDeadzone) {
-            scrub.playbackRate = clamp(1 + delta * syncConfig.rateGain, 1, syncConfig.maxRate);
-            if (scrub.paused) void scrub.play().catch(() => {});
-            return;
-          }
-
-          scrub.playbackRate = 1;
-          scrub.pause();
-
-          if (absDelta > syncConfig.playbackDeadzone && canSeek) {
-            scrub.currentTime = quantizeTimeToFrame(desiredTime, HERO_SCRUB_FPS, safeEnd);
-            lastScrubSeekAtRef.current = now;
+          if (currentTime < safeEnd - motionConfig.playbackDeadzone) {
+            video.playbackRate = 1;
+            if (video.paused) void video.play().catch(() => {});
+          } else {
+            video.pause();
+            video.playbackRate = 1;
+            if (absDelta > motionConfig.playbackDeadzone && canSeek) {
+              video.currentTime = quantizeTimeToFrame(desiredTime, HERO_SCRUB_FPS, safeEnd);
+              lastFeatureSeekAtRef.current = now;
+            }
           }
           return;
         }
 
-        if (delta >= syncConfig.playbackDeadzone) {
-          scrub.playbackRate = clamp(1 + delta * syncConfig.rateGain, syncConfig.minRate, syncConfig.maxRate);
-          if (scrub.paused) void scrub.play().catch(() => {});
+        video.pause();
+        video.playbackRate = 1;
 
-          if (absDelta > syncConfig.seekThreshold && canSeek) {
-            scrub.currentTime = quantizeTimeToFrame(desiredTime, HERO_SCRUB_FPS, safeEnd);
-            lastScrubSeekAtRef.current = now;
-          }
-          return;
-        }
-
-        scrub.playbackRate = 1;
-        scrub.pause();
-
-        if (delta < -syncConfig.reverseThreshold && canSeek) {
-          scrub.currentTime = quantizeTimeToFrame(desiredTime, HERO_SCRUB_FPS, safeEnd);
-          lastScrubSeekAtRef.current = now;
+        if (delta < -motionConfig.reverseThreshold && canSeek) {
+          video.currentTime = quantizeTimeToFrame(desiredTime, HERO_SCRUB_FPS, safeEnd);
+          lastFeatureSeekAtRef.current = now;
         }
       };
 
       const updatePhase = (progress: number, phase: HeroPhase) => {
-        const scrub = scrubVideoRef.current;
         const loopStack = loopStackRef.current;
-        if (!scrub || !loopStack) return;
+        const feature = featureVideoRef.current;
+        if (!loopStack || !feature) return;
 
         const localProgress = phaseProgress(progress, phase);
 
         switch (phase) {
           case 'intro': {
-            gsap.set(loopStack, { opacity: 1, scale: 1 + localProgress * 0.0035 });
-            gsap.set(scrub, { opacity: 0, scale: 1 });
-            gsap.set(vignetteRef.current, { opacity: 1 + localProgress * 0.38 });
+            gsap.set(loopStack, { opacity: 1, scale: 1 + localProgress * 0.003 });
+            gsap.set(feature, { opacity: 0, scale: 1 });
             gsap.set(gradientRef.current, { opacity: 1 + localProgress * 0.18 });
-            gsap.set(smokeRef.current, { opacity: 0.08 + localProgress * 0.1, y: -(localProgress * 15) });
+            gsap.set(vignetteRef.current, { opacity: 1 + localProgress * 0.34 });
+            gsap.set(smokeRef.current, { opacity: 0.08 + localProgress * 0.08, y: -(localProgress * 12) });
             gsap.set(exitRef.current, { opacity: 0 });
             break;
           }
           case 'crossfade': {
-            gsap.set(loopStack, { opacity: 1, scale: 1.003 + localProgress * 0.0025 });
-            gsap.set(scrub, { opacity: localProgress, scale: 1.001 + localProgress * 0.002 });
-            gsap.set(gradientRef.current, { opacity: 1.18 + localProgress * 0.22 });
-            gsap.set(vignetteRef.current, { opacity: 1.28 + localProgress * 0.2 });
-            gsap.set(smokeRef.current, { opacity: 0.16 + localProgress * 0.06, y: -14 - localProgress * 14 });
+            gsap.set(loopStack, { opacity: 1, scale: 1.002 + localProgress * 0.002 });
+            gsap.set(feature, { opacity: localProgress, scale: 1.001 + localProgress * 0.002 });
+            gsap.set(gradientRef.current, { opacity: 1.18 + localProgress * 0.18 });
+            gsap.set(vignetteRef.current, { opacity: 1.26 + localProgress * 0.18 });
+            gsap.set(smokeRef.current, { opacity: 0.15 + localProgress * 0.06, y: -12 - localProgress * 14 });
             gsap.set(exitRef.current, { opacity: 0 });
             break;
           }
           case 'flip': {
-            const duration = scrub.duration && isFinite(scrub.duration) ? scrub.duration : 4;
+            const duration = feature.duration && isFinite(feature.duration) ? feature.duration : 4;
             if (duration > 0) {
-              targetTimeRef.current = getFlipTargetTime(localProgress, duration);
+              videoTargetTimeRef.current = getFlipTargetTime(localProgress, duration);
             }
 
             gsap.set(loopStack, { opacity: 0 });
-            gsap.set(scrub, { opacity: 1, scale: 1.004 + localProgress * 0.0065 });
-            gsap.set(gradientRef.current, { opacity: 1.42 + localProgress * 0.1 });
-            gsap.set(vignetteRef.current, { opacity: 1.48 + localProgress * 0.1 });
-            gsap.set(smokeRef.current, { opacity: 0.22, y: -30 });
+            gsap.set(feature, { opacity: 1, scale: 1.004 + localProgress * 0.0055 });
+            gsap.set(gradientRef.current, { opacity: 1.38 + localProgress * 0.12 });
+            gsap.set(vignetteRef.current, { opacity: 1.44 + localProgress * 0.12 });
+            gsap.set(smokeRef.current, { opacity: 0.22, y: -28 });
             gsap.set(exitRef.current, { opacity: 0 });
             break;
           }
           case 'hold': {
             gsap.set(loopStack, { opacity: 0 });
-            gsap.set(scrub, { opacity: 1, scale: 1.011 + localProgress * 0.0035 });
-            gsap.set(gradientRef.current, { opacity: 1.52 + localProgress * 0.32 });
+            gsap.set(feature, { opacity: 1, scale: 1.009 + localProgress * 0.004 });
+            gsap.set(gradientRef.current, { opacity: 1.5 + localProgress * 0.28 });
             gsap.set(vignetteRef.current, { opacity: 1.56 + localProgress * 0.16 });
-            gsap.set(smokeRef.current, { opacity: 0.24 + localProgress * 0.08, y: -30 - localProgress * 10 });
+            gsap.set(smokeRef.current, { opacity: 0.24 + localProgress * 0.08, y: -28 - localProgress * 12 });
             gsap.set(exitRef.current, { opacity: localProgress * 0.24 });
             break;
           }
           case 'exit': {
             gsap.set(loopStack, { opacity: 0 });
-            gsap.set(scrub, { opacity: 1 - localProgress * 0.65, scale: 1.014 + localProgress * 0.004 });
-            gsap.set(gradientRef.current, { opacity: 1.84 });
-            gsap.set(vignetteRef.current, { opacity: 1.72 });
-            gsap.set(smokeRef.current, { opacity: 0.3 - localProgress * 0.15, y: -40 });
-            gsap.set(exitRef.current, { opacity: 0.24 + localProgress * 0.54 });
+            gsap.set(feature, { opacity: 1 - localProgress * 0.65, scale: 1.013 + localProgress * 0.004 });
+            gsap.set(gradientRef.current, { opacity: 1.82 });
+            gsap.set(vignetteRef.current, { opacity: 1.7 });
+            gsap.set(smokeRef.current, { opacity: 0.3 - localProgress * 0.14, y: -40 });
+            gsap.set(exitRef.current, { opacity: 0.24 + localProgress * 0.52 });
             break;
           }
         }
       };
 
       const tick = (now: number) => {
-        const scrub = scrubVideoRef.current;
+        const feature = featureVideoRef.current;
         const lastTickAt = lastTickAtRef.current || now;
         const deltaSeconds = (now - lastTickAt) / 1000;
         lastTickAtRef.current = now;
 
         renderedProgressRef.current +=
           (scrubTargetProgressRef.current - renderedProgressRef.current) *
-          getLerpFactor(syncConfig.progressResponse, deltaSeconds);
+          getLerpFactor(motionConfig.progressResponse, deltaSeconds);
 
         if (Math.abs(scrubTargetProgressRef.current - renderedProgressRef.current) < 0.0008) {
           renderedProgressRef.current = scrubTargetProgressRef.current;
@@ -294,102 +286,75 @@ export default function useHeroSceneAnimation({
         const phase = getPhase(renderedProgressRef.current);
         updatePhase(renderedProgressRef.current, phase);
 
-        if (idleLoopEnabledRef.current) {
-          const [a, b] = getLoops();
-          const active = activeLoopIndexRef.current === 0 ? a : b;
-          if (
-            active &&
-            active.duration > 0 &&
-            !isLoopCrossfadingRef.current &&
-            active.currentTime >= active.duration - 2.5
-          ) {
-            startLoopCrossfade();
-          }
+        const [a, b] = getLoops();
+        const active = activeLoopIndexRef.current === 0 ? a : b;
+        if (
+          active &&
+          active.duration > 0 &&
+          !isLoopCrossfadingRef.current &&
+          active.currentTime >= active.duration - 2.5
+        ) {
+          startLoopCrossfade();
         }
 
-        if (scrub && (phase === 'flip' || phase === 'hold' || phase === 'exit')) {
-          if (scrub.readyState < 2) {
-            rafIdRef.current = requestAnimationFrame(tick);
-            return;
+        if (feature && (phase === 'flip' || phase === 'hold' || phase === 'exit')) {
+          if (feature.readyState >= 2) {
+            const duration = feature.duration && isFinite(feature.duration) ? feature.duration : 4;
+            const safeEnd = Math.max(duration - motionConfig.safeEndOffset, 0);
+            const rawTarget = phase === 'flip' ? videoTargetTimeRef.current : safeEnd;
+
+            videoTargetTimeRef.current +=
+              (rawTarget - videoTargetTimeRef.current) * getLerpFactor(motionConfig.videoResponse, deltaSeconds);
+
+            syncFeatureVideo(feature, clamp(videoTargetTimeRef.current, 0, safeEnd), phase, now);
           }
-
-          const duration = scrub.duration && isFinite(scrub.duration) ? scrub.duration : 4;
-          const safeEnd = Math.max(duration - syncConfig.safeEndOffset, 0);
-          const rawTarget = phase === 'flip' ? targetTimeRef.current : safeEnd;
-
-          videoSyncTimeRef.current +=
-            (rawTarget - videoSyncTimeRef.current) * getLerpFactor(syncConfig.timeResponse, deltaSeconds);
-
-          if (Math.abs(rawTarget - videoSyncTimeRef.current) < syncConfig.playbackDeadzone) {
-            videoSyncTimeRef.current = rawTarget;
-          }
-
-          syncScrubPlayback(scrub, clamp(videoSyncTimeRef.current, 0, safeEnd), phase, now, safeEnd);
         }
 
         rafIdRef.current = requestAnimationFrame(tick);
       };
 
       const handlePhaseChange = (prev: HeroPhase, next: HeroPhase) => {
-        const scrub = scrubVideoRef.current;
-        const duration = scrub?.duration && isFinite(scrub.duration) ? scrub.duration : 4;
-        const safeEnd = Math.max(duration - syncConfig.safeEndOffset, 0);
+        const feature = featureVideoRef.current;
 
         switch (next) {
           case 'intro': {
-            idleLoopEnabledRef.current = true;
             playActiveLoop();
-            resetScrubVideo(scrub, 0.001);
+            resetFeatureVideo(feature, 0.001);
             scrubTargetProgressRef.current = 0;
             renderedProgressRef.current = 0;
             lastTickAtRef.current = 0;
             break;
           }
           case 'crossfade': {
-            idleLoopEnabledRef.current = false;
-            pauseAllLoops();
-            if (prev === 'intro') resetScrubVideo(scrub, 0.001);
+            if (prev === 'intro') resetFeatureVideo(feature, 0.001);
             lastTickAtRef.current = 0;
             break;
           }
           case 'flip': {
-            idleLoopEnabledRef.current = false;
-            pauseAllLoops();
-            lastScrubSeekAtRef.current = 0;
-            if (scrub) {
-              if (prev === 'crossfade' || prev === 'intro') {
-                resetScrubVideo(scrub, 0.001);
+            lastFeatureSeekAtRef.current = 0;
+            if (feature) {
+              if (prev === 'intro' || prev === 'crossfade') {
+                resetFeatureVideo(feature, 0.001);
               }
-              videoSyncTimeRef.current = scrub.currentTime;
-              void scrub.play().catch(() => {});
+              void feature.play().catch(() => {});
             }
             lastTickAtRef.current = 0;
             break;
           }
           case 'hold': {
-            idleLoopEnabledRef.current = false;
-            pauseAllLoops();
-            if (scrub) {
-              videoSyncTimeRef.current = clamp(scrub.currentTime, 0, safeEnd);
-            }
             lastTickAtRef.current = 0;
             break;
           }
           case 'exit': {
-            idleLoopEnabledRef.current = false;
-            if (scrub) {
-              scrub.playbackRate = 1;
-            }
+            if (feature) feature.playbackRate = 1;
             break;
           }
         }
       };
 
-      idleLoopEnabledRef.current = true;
       playActiveLoop();
-      resetScrubVideo(scrubVideoRef.current, 0.001);
+      resetFeatureVideo(featureVideoRef.current, 0.001);
       runIntro();
-
       rafIdRef.current = requestAnimationFrame(tick);
 
       gsap
@@ -410,7 +375,7 @@ export default function useHeroSceneAnimation({
       ScrollTrigger.create({
         trigger: scene,
         start: 'top top',
-        end: () => `+=${Math.round(window.innerHeight * 4.4)}`,
+        end: () => `+=${Math.round(window.innerHeight * 4.2)}`,
         pin: true,
         scrub: true,
         anticipatePin: 1,
@@ -438,7 +403,7 @@ export default function useHeroSceneAnimation({
     loopVideoARef,
     loopVideoBRef,
     loopStackRef,
-    scrubVideoRef,
+    featureVideoRef,
     gradientRef,
     exitRef,
     vignetteRef,

@@ -1,10 +1,13 @@
 import { client } from '@/sanity/lib/client';
 import { landingPageQuery } from '@/sanity/lib/queries';
 import { t } from '@/lib/utils/i18n';
-import type { Metadata, ResolvingMetadata } from 'next';
+import type { Metadata } from 'next';
 
 // Scenes — hardcoded order per PROJECT_SPEC
 import HeroScene from '@/components/scenes/HeroScene';
+import HeroSceneFrames from '@/components/scenes/HeroSceneFrames';
+import HeroScenePremium from '@/components/scenes/HeroScenePremium';
+import HeroSceneSequence from '@/components/scenes/HeroSceneSequence';
 import TypographyScene from '@/components/scenes/TypographyScene';
 import SplitScene from '@/components/scenes/SplitScene';
 import ProcessScene from '@/components/scenes/ProcessScene';
@@ -17,6 +20,8 @@ import MenuScene from '@/components/scenes/MenuScene';
 import FinalScene from '@/components/scenes/FinalScene';
 import CtaScene from '@/components/scenes/CtaScene';
 import CookieConsent from '@/components/CookieConsent';
+
+const HERO_VARIANT: 'default' | 'premium' | 'sequence' | 'frames' = 'frames';
 
 export async function generateMetadata(
   { params }: { params: Promise<{ lang: string }> }
@@ -130,11 +135,19 @@ export default async function LandingPage({ params }: { params: Promise<{ lang: 
   const ctaLocationValue = data?.cta ? t(data.cta.locationValue, lang) : undefined;
   const ctaHoursLabel = data?.cta ? t(data.cta.hoursLabel, lang) : undefined;
   const ctaHoursValue = data?.cta ? t(data.cta.hoursValue, lang) : undefined;
+  const HeroComponent =
+    HERO_VARIANT === 'frames'
+      ? HeroSceneFrames
+      : HERO_VARIANT === 'sequence'
+      ? HeroSceneSequence
+      : HERO_VARIANT === 'premium'
+        ? HeroScenePremium
+        : HeroScene;
 
   return (
     <main>
       {/* SCENE 1 — Fire Intro */}
-      <HeroScene
+      <HeroComponent
         lang={lang}
         heading={heroHeading}
         tagline={heroTagline}
@@ -249,4 +262,3 @@ export default async function LandingPage({ params }: { params: Promise<{ lang: 
     </main>
   );
 }
-
