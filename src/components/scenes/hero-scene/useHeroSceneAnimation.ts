@@ -153,21 +153,14 @@ export default function useHeroSceneAnimation({
           if (duration > 0) {
             const safeTarget = clamp(targetTimeRef.current, 0, Math.max(duration - 0.001, 0));
             const delta = safeTarget - scrub.currentTime;
-            const speed = scrollVelocityRef.current;
 
-            if (speed < 8) {
-              scrub.pause();
-              if (Math.abs(delta) > 0.012) {
-                scrub.currentTime = safeTarget;
-              }
-            } else if (delta > 0.01) {
-              scrub.playbackRate = clamp(1 + delta * 6.5, 1, 5);
-              if (scrub.paused) scrub.play().catch(() => {});
-            } else if (delta < -0.05) {
-              scrub.pause();
+            // Simplify video scrubbing for iOS Safari.
+            // Juggling play(), pause(), and playbackRate causes massive
+            // lag and decoding pipeline stalls, especially with WebM on Apple devices.
+            // GSAP's \`scrub: true\` already smooths \`targetTimeRef\`, so we just assign it.
+            if (Math.abs(delta) > 0.01) {
+              if (!scrub.paused) scrub.pause();
               scrub.currentTime = safeTarget;
-            } else {
-              scrub.pause();
             }
           }
         }

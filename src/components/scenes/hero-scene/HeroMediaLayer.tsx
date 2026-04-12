@@ -34,6 +34,7 @@ export default function HeroMediaLayer({
         <video
           ref={loopVideoARef}
           poster="/hero-poster.jpg"
+          autoPlay
           muted
           playsInline
           preload="auto"
@@ -44,6 +45,7 @@ export default function HeroMediaLayer({
         <video
           ref={loopVideoBRef}
           poster="/hero-poster.jpg"
+          autoPlay
           muted
           playsInline
           preload="auto"
@@ -68,12 +70,15 @@ export default function HeroMediaLayer({
         <video
           ref={scrubVideoRef}
           poster="/hero-poster.jpg"
+          autoPlay
           muted
           playsInline
           preload="auto"
           className="hero-canvas hero-canvas--scrub"
           onLoadedData={(event) => {
-            (event.target as HTMLVideoElement).currentTime = 0.001;
+            const v = event.target as HTMLVideoElement;
+            v.pause();
+            v.currentTime = 0.001;
           }}
         >
           <source src="/meatFlipNew.webm" type="video/webm" />
