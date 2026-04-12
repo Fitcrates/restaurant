@@ -26,13 +26,13 @@ export default function DishesScene({ lang, heading, dishes }: DishesSceneProps)
   const trackRef = useRef<HTMLDivElement>(null);
 
   const defaultDishes: Dish[] = [
-    { name: d('dishes.kobe.name', lang), description: d('dishes.kobe.desc', lang), price: '320 PLN', imageUrl: '/kobe_striploin.png' },
-    { name: d('dishes.gejang.name', lang), description: d('dishes.gejang.desc', lang), price: '180 PLN', imageUrl: '/ganjang_gejang.png' },
-    { name: d('dishes.samgyeopsal.name', lang), description: d('dishes.samgyeopsal.desc', lang), price: '110 PLN', imageUrl: '/samgyeopsal.png' },
-    { name: d('dishes.bulgogi.name', lang), description: d('dishes.bulgogi.desc', lang), price: '160 PLN', imageUrl: '/wagyubulgogi.png' },
-    { name: d('dishes.galbi.name', lang), description: d('dishes.galbi.desc', lang), price: '140 PLN', imageUrl: '/galbi.png' },
-    { name: d('dishes.japchae.name', lang), description: d('dishes.japchae.desc', lang), price: '65 PLN', imageUrl: '/japchae.png' },
-    { name: d('dishes.doenjang.name', lang), description: d('dishes.doenjang.desc', lang), price: '55 PLN', imageUrl: '/doenjang.png' },
+    { name: d('dishes.kobe.name', lang), description: d('dishes.kobe.desc', lang), price: '320 PLN', imageUrl: '/webp/kobe_striploin.webp' },
+    { name: d('dishes.gejang.name', lang), description: d('dishes.gejang.desc', lang), price: '180 PLN', imageUrl: '/webp/ganjang_gejang.webp' },
+    { name: d('dishes.samgyeopsal.name', lang), description: d('dishes.samgyeopsal.desc', lang), price: '110 PLN', imageUrl: '/webp/samgyeopsal.webp' },
+    { name: d('dishes.bulgogi.name', lang), description: d('dishes.bulgogi.desc', lang), price: '160 PLN', imageUrl: '/webp/wagyubulgogi.webp' },
+    { name: d('dishes.galbi.name', lang), description: d('dishes.galbi.desc', lang), price: '140 PLN', imageUrl: '/webp/galbi.webp' },
+    { name: d('dishes.japchae.name', lang), description: d('dishes.japchae.desc', lang), price: '65 PLN', imageUrl: '/webp/japchae.webp' },
+    { name: d('dishes.doenjang.name', lang), description: d('dishes.doenjang.desc', lang), price: '55 PLN', imageUrl: '/webp/doenjang.webp' },
   ];
 
   const displayDishes = dishes && dishes.length > 0 ? dishes : defaultDishes;
@@ -90,7 +90,7 @@ export default function DishesScene({ lang, heading, dishes }: DishesSceneProps)
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     className="scene-dishes__card-image"
-                    src={dish.imageUrl || '/dish.png'}
+                    src={dish.imageUrl || '/webp/dish.webp'}
                     alt={dish.name}
                     loading="lazy"
                   />

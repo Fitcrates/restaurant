@@ -86,7 +86,7 @@ export default function SplitScene({ lang, label, heading, body, imageUrl }: Spl
           <img
             ref={imageRef}
             className="scene-split__image"
-            src={imageUrl || '/bornfire.png'}
+            src={imageUrl || '/webp/bornfire.webp'}
             alt="Korean BBQ preparation"
             loading="lazy"
           />

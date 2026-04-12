@@ -79,7 +79,7 @@ export default function ChaosScene({ lang, bigText1, bigText2, bigText3, smallTe
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           className="scene-chaos__bg-image"
-          src={imageUrl || '/hero-bg.png'}
+          src={imageUrl || '/webp/hero-bg.webp'}
           alt=""
           aria-hidden="true"
           loading="lazy"

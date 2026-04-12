@@ -87,7 +87,7 @@ export default function GridBreakerScene({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             className="scene-gridbreaker__image"
-            src={mainImageUrl || '/bibimbap.png'}
+            src={mainImageUrl || '/webp/bibimbap.webp'}
             alt="Korean Bibimbap presentation"
             loading="lazy"
           />
@@ -99,7 +99,7 @@ export default function GridBreakerScene({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             className="scene-gridbreaker__image"
-            src={sideImage1Url || '/ttopoki.png'}
+            src={sideImage1Url || '/webp/ttopoki.webp'}
             alt="Tteokbokki spicy rice cakes"
             loading="lazy"
           />
@@ -108,7 +108,7 @@ export default function GridBreakerScene({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             className="scene-gridbreaker__image"
-            src={sideImage2Url || '/cziken.png'}
+            src={sideImage2Url || '/webp/cziken.webp'}
             alt="Korean Fried Chicken close-up"
             loading="lazy"
           />

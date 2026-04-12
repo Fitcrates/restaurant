@@ -25,13 +25,13 @@ export default function MenuScene({ lang, heading, label, items }: MenuSceneProp
   const sceneRef = useRef<HTMLElement>(null);
 
   const defaultItems: MenuItem[] = [
-    { name: d('dishes.kobe.name', lang), description: d('menu.kobe.desc', lang), price: '320 PLN', imageUrl: '/kobe_striploin.png' },
-    { name: d('dishes.samgyeopsal.name', lang), description: d('menu.samgyeopsal.desc', lang), price: '110 PLN', imageUrl: '/samgyeopsal.png' },
-    { name: d('dishes.bulgogi.name', lang), description: d('menu.bulgogi.desc', lang), price: '160 PLN', imageUrl: '/wagyubulgogi.png' },
-    { name: d('dishes.gejang.name', lang), description: d('menu.gejang.desc', lang), price: '180 PLN', imageUrl: '/ganjang_gejang.png' },
-    { name: d('dishes.galbi.name', lang), description: d('menu.galbi.desc', lang), price: '140 PLN', imageUrl: '/galbi.png' },
-    { name: d('dishes.japchae.name', lang), description: d('menu.japchae.desc', lang), price: '65 PLN', imageUrl: '/japchae.png' },
-    { name: d('dishes.doenjang.name', lang), description: d('menu.doenjang.desc', lang), price: '55 PLN', imageUrl: '/doenjang.png' },
+    { name: d('dishes.kobe.name', lang), description: d('menu.kobe.desc', lang), price: '320 PLN', imageUrl: '/webp/kobe_striploin.webp' },
+    { name: d('dishes.samgyeopsal.name', lang), description: d('menu.samgyeopsal.desc', lang), price: '110 PLN', imageUrl: '/webp/samgyeopsal.webp' },
+    { name: d('dishes.bulgogi.name', lang), description: d('menu.bulgogi.desc', lang), price: '160 PLN', imageUrl: '/webp/wagyubulgogi.webp' },
+    { name: d('dishes.gejang.name', lang), description: d('menu.gejang.desc', lang), price: '180 PLN', imageUrl: '/webp/ganjang_gejang.webp' },
+    { name: d('dishes.galbi.name', lang), description: d('menu.galbi.desc', lang), price: '140 PLN', imageUrl: '/webp/galbi.webp' },
+    { name: d('dishes.japchae.name', lang), description: d('menu.japchae.desc', lang), price: '65 PLN', imageUrl: '/webp/japchae.webp' },
+    { name: d('dishes.doenjang.name', lang), description: d('menu.doenjang.desc', lang), price: '55 PLN', imageUrl: '/webp/doenjang.webp' },
   ];
 
   const displayItems = items && items.length > 0 ? items : defaultItems;
@@ -108,7 +108,7 @@ export default function MenuScene({ lang, heading, label, items }: MenuSceneProp
                 <div className="scene-menu__item-media" aria-hidden="true">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={item.imageUrl || '/dish.png'}
+                    src={item.imageUrl || '/webp/dish.webp'}
                     alt=""
                     className="scene-menu__item-media-image"
                     loading="lazy"

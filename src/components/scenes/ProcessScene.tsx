@@ -22,10 +22,10 @@ export default function ProcessScene({ lang, steps }: ProcessSceneProps) {
   const sceneRef = useRef<HTMLDivElement>(null);
 
   const defaultSteps: ProcessStep[] = [
-    { title: d('process.step1.title', lang), description: d('process.step1.desc', lang), imageUrl: '/charcoal.png' },
-    { title: d('process.step2.title', lang), description: d('process.step2.desc', lang), imageUrl: '/ingredients.png' },
-    { title: d('process.step3.title', lang), description: d('process.step3.desc', lang), imageUrl: '/dish.png' },
-    { title: d('process.step4.title', lang), description: d('process.step4.desc', lang), imageUrl: '/servegrill.png' },
+    { title: d('process.step1.title', lang), description: d('process.step1.desc', lang), imageUrl: '/webp/charcoal.webp' },
+    { title: d('process.step2.title', lang), description: d('process.step2.desc', lang), imageUrl: '/webp/ingredients.webp' },
+    { title: d('process.step3.title', lang), description: d('process.step3.desc', lang), imageUrl: '/webp/dish.webp' },
+    { title: d('process.step4.title', lang), description: d('process.step4.desc', lang), imageUrl: '/webp/servegrill.webp' },
   ];
 
   const processSteps = steps && steps.length > 0 ? steps : defaultSteps;
@@ -102,7 +102,7 @@ export default function ProcessScene({ lang, steps }: ProcessSceneProps) {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   className="scene-process__image"
-                  src={step.imageUrl || '/dish.png'}
+                  src={step.imageUrl || '/webp/dish.webp'}
                   alt={step.title}
                   loading="lazy"
                 />
@@ -125,7 +125,7 @@ export default function ProcessScene({ lang, steps }: ProcessSceneProps) {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 className="scene-process__mobile-card-image"
-                src={step.imageUrl || '/dish.png'}
+                src={step.imageUrl || '/webp/dish.webp'}
                 alt={step.title}
                 loading="lazy"
               />

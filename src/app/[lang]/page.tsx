@@ -44,7 +44,7 @@ export async function generateMetadata(
       type: 'website',
       images: [
         {
-          url: '/kobe_striploin.png',
+          url: '/webp/kobe_striploin.webp',
           width: 1200,
           height: 630,
           alt: isPl ? 'Koreańskie BBQ z najwyższej półki' : 'Premium Korean BBQ',

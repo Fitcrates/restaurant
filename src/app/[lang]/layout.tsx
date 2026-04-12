@@ -19,6 +19,16 @@ export const metadata: Metadata = {
     description: 'Mastery of the Flame. Premium Korean dining experience.',
     type: 'website',
   },
+  manifest: '/site.webmanifest',
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
+    ],
+    apple: [
+      { url: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
+    ],
+  },
 };
 
 export default async function LangLayout({

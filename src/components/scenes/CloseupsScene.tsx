@@ -21,9 +21,9 @@ export default function CloseupsScene({ lang, items }: CloseupsSceneProps) {
   const sceneRef = useRef<HTMLElement>(null);
 
   const defaultItems: CloseupItem[] = [
-    { imageUrl: '/thegrill2.png', caption: d('closeups.item1', lang) },
-    { imageUrl: '/detail2.png', caption: d('closeups.item2', lang) },
-    { imageUrl: '/detail.png', caption: d('closeups.item3', lang) },
+    { imageUrl: '/webp/thegrill2.webp', caption: d('closeups.item1', lang) },
+    { imageUrl: '/webp/detail2.webp', caption: d('closeups.item2', lang) },
+    { imageUrl: '/webp/detail.webp', caption: d('closeups.item3', lang) },
   ];
 
   const displayItems = items && items.length > 0 ? items : defaultItems;
