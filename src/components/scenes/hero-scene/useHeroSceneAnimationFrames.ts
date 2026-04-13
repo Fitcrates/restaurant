@@ -219,7 +219,7 @@ export default function useHeroSceneAnimationFrames({
         }
         case 'crossfade': {
           gsap.set(loopStack, { opacity: 1, scale: 1.002 + localProgress * 0.002 });
-          gsap.set(canvas, { opacity: sequenceVisible ? localProgress : 0, scale: 1.001 + localProgress * 0.002 });
+          gsap.set(canvas, { opacity: sequenceVisible ? 0.2 + localProgress * 0.8 : 0, scale: 1.001 + localProgress * 0.002 });
           gsap.set(gradientRef.current, { opacity: 1.16 + localProgress * 0.18 });
           gsap.set(vignetteRef.current, { opacity: 1.24 + localProgress * 0.18 });
           gsap.set(smokeRef.current, { opacity: 0.14 + localProgress * 0.06, y: -12 - localProgress * 14 });
@@ -227,8 +227,8 @@ export default function useHeroSceneAnimationFrames({
           break;
         }
         case 'flip': {
-          gsap.set(loopStack, { opacity: sequenceVisible ? 0 : 1 });
-          gsap.set(canvas, { opacity: sequenceVisible ? 1 : 0, scale: 1.003 + localProgress * 0.005 });
+          gsap.set(loopStack, { opacity: sequenceVisible ? 1 - localProgress * 0.9 : 1 });
+          gsap.set(canvas, { opacity: sequenceVisible ? 0.72 + localProgress * 0.28 : 0, scale: 1.003 + localProgress * 0.005 });
           gsap.set(gradientRef.current, { opacity: 1.36 + localProgress * 0.12 });
           gsap.set(vignetteRef.current, { opacity: 1.42 + localProgress * 0.12 });
           gsap.set(smokeRef.current, { opacity: 0.22, y: -28 });
@@ -334,11 +334,11 @@ export default function useHeroSceneAnimationFrames({
         rafIdRef.current = requestAnimationFrame(tick);
       };
 
+      void preloadSequence();
       playActiveLoop();
       resizeCanvas();
       onTextIntroReady?.();
       runIntro();
-      void preloadSequence();
       rafIdRef.current = requestAnimationFrame(tick);
 
       window.addEventListener('resize', resizeCanvas);

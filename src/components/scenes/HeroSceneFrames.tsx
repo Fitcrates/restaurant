@@ -38,42 +38,30 @@ export default function HeroSceneFrames({
 
   useEffect(() => {
     const isMobileViewport = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
+    let rafA: number | null = null;
+    let rafB: number | null = null;
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
-    let idleId: number | null = null;
-    const requestIdle =
-      typeof window.requestIdleCallback === 'function'
-        ? window.requestIdleCallback.bind(window)
-        : null;
-    const cancelIdle =
-      typeof window.cancelIdleCallback === 'function'
-        ? window.cancelIdleCallback.bind(window)
-        : null;
 
     const loadMotionMedia = () => {
       setShouldLoadMotionMedia(true);
     };
 
     const scheduleLoad = () => {
-      if (requestIdle) {
-        idleId = requestIdle(loadMotionMedia, {
-          timeout: isMobileViewport ? 2200 : 800,
+      rafA = window.requestAnimationFrame(() => {
+        rafB = window.requestAnimationFrame(() => {
+          timeoutId = setTimeout(loadMotionMedia, isMobileViewport ? 120 : 40);
         });
-        return;
-      }
-
-      timeoutId = setTimeout(loadMotionMedia, isMobileViewport ? 900 : 180);
+      });
     };
 
-    if (document.readyState === 'complete') {
-      scheduleLoad();
-    } else {
-      window.addEventListener('load', scheduleLoad, { once: true });
-    }
+    scheduleLoad();
 
     return () => {
-      window.removeEventListener('load', scheduleLoad);
-      if (idleId !== null && cancelIdle) {
-        cancelIdle(idleId);
+      if (rafA !== null) {
+        window.cancelAnimationFrame(rafA);
+      }
+      if (rafB !== null) {
+        window.cancelAnimationFrame(rafB);
       }
       if (timeoutId !== null) {
         clearTimeout(timeoutId);

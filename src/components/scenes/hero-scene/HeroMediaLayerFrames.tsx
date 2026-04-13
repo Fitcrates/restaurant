@@ -51,12 +51,20 @@ export default function HeroMediaLayerFrames({
               loop
               muted
               playsInline
-              preload="none"
+              preload="auto"
               controls={false}
               disablePictureInPicture
               controlsList="nodownload noplaybackrate noremoteplayback"
               onLoadedMetadata={(event) => applyVideoFlags(event.currentTarget)}
+              onLoadedData={(event) => {
+                applyVideoFlags(event.currentTarget);
+                void event.currentTarget.play().catch(() => {});
+              }}
               onCanPlay={(event) => {
+                applyVideoFlags(event.currentTarget);
+                void event.currentTarget.play().catch(() => {});
+              }}
+              onPlay={(event) => {
                 applyVideoFlags(event.currentTarget);
                 onIdleMediaReady();
               }}
@@ -73,11 +81,15 @@ export default function HeroMediaLayerFrames({
               loop
               muted
               playsInline
-              preload="none"
+              preload="metadata"
               controls={false}
               disablePictureInPicture
               controlsList="nodownload noplaybackrate noremoteplayback"
               onLoadedMetadata={(event) => applyVideoFlags(event.currentTarget)}
+              onLoadedData={(event) => {
+                applyVideoFlags(event.currentTarget);
+                void event.currentTarget.play().catch(() => {});
+              }}
               className="hero-canvas hero-canvas--loop-b"
             >
               <source src="/noChpsticks.webm" type="video/webm" />
