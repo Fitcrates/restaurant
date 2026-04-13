@@ -20,6 +20,7 @@ type UseHeroSceneAnimationFramesParams = {
   exitRef: React.RefObject<HTMLDivElement | null>;
   vignetteRef: React.RefObject<HTMLDivElement | null>;
   smokeRef: React.RefObject<HTMLDivElement | null>;
+  onTextIntroReady?: () => void;
 };
 
 export default function useHeroSceneAnimationFrames({
@@ -32,6 +33,7 @@ export default function useHeroSceneAnimationFrames({
   exitRef,
   vignetteRef,
   smokeRef,
+  onTextIntroReady,
 }: UseHeroSceneAnimationFramesParams) {
   const activeLoopIndexRef = useRef<0 | 1>(0);
   const isLoopCrossfadingRef = useRef(false);
@@ -43,6 +45,7 @@ export default function useHeroSceneAnimationFrames({
   const rafIdRef = useRef(0);
   const lastTickAtRef = useRef(0);
   const imagesRef = useRef<HTMLImageElement[]>([]);
+  const highestLoadedFrameRef = useRef(0);
   const sequenceReadyRef = useRef(false);
   const sequenceUnavailableRef = useRef(false);
 
@@ -173,26 +176,28 @@ export default function useHeroSceneAnimationFrames({
     const preloadSequence = async () => {
       if (sequenceUnavailableRef.current) return;
 
-      const firstFrame = await loadImage(HERO_SEQUENCE_SOURCES[0]).catch(() => null);
+      const firstFrame = await loadImage('/Frame0.webp').catch(() => null);
       if (!firstFrame) {
         sequenceReadyRef.current = false;
         sequenceUnavailableRef.current = true;
         return;
       }
 
-      const restFrames = await Promise.all(
-        HERO_SEQUENCE_SOURCES.slice(1).map((src) => loadImage(src))
-      ).catch(() => []);
-
-      if (restFrames.length !== HERO_SEQUENCE_FRAME_COUNT - 1) {
-        sequenceReadyRef.current = false;
-        sequenceUnavailableRef.current = true;
-        return;
-      }
-
-      imagesRef.current = [firstFrame, ...restFrames];
+      imagesRef.current = [firstFrame];
+      highestLoadedFrameRef.current = 0;
       sequenceReadyRef.current = true;
       drawFrameByIndex(0);
+
+      for (let index = 1; index < HERO_SEQUENCE_FRAME_COUNT; index += 1) {
+        const frame = await loadImage(HERO_SEQUENCE_SOURCES[index]).catch(() => null);
+        if (!frame) {
+          sequenceUnavailableRef.current = true;
+          break;
+        }
+
+        imagesRef.current[index] = frame;
+        highestLoadedFrameRef.current = index;
+      }
     };
 
     const updatePhase = (progress: number, phase: HeroPhase) => {
@@ -236,7 +241,7 @@ export default function useHeroSceneAnimationFrames({
           gsap.set(gradientRef.current, { opacity: 1.48 + localProgress * 0.28 });
           gsap.set(vignetteRef.current, { opacity: 1.54 + localProgress * 0.16 });
           gsap.set(smokeRef.current, { opacity: 0.24 + localProgress * 0.08, y: -28 - localProgress * 12 });
-          gsap.set(exitRef.current, { opacity: localProgress * 0.24 });
+          gsap.set(exitRef.current, { opacity: 0 });
           break;
         }
         case 'exit': {
@@ -245,7 +250,7 @@ export default function useHeroSceneAnimationFrames({
           gsap.set(gradientRef.current, { opacity: 1.8 });
           gsap.set(vignetteRef.current, { opacity: 1.68 });
           gsap.set(smokeRef.current, { opacity: 0.3 - localProgress * 0.14, y: -40 });
-          gsap.set(exitRef.current, { opacity: 0.24 + localProgress * 0.52 });
+          gsap.set(exitRef.current, { opacity: 0.08 + localProgress * 0.18 });
           break;
         }
       }
@@ -275,9 +280,9 @@ export default function useHeroSceneAnimationFrames({
           );
         }
 
-        introTl.fromTo('.hero-brand-line', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 1, delay: 0.3 }, 0);
-        introTl.fromTo('.hero-title-word', { opacity: 0, y: 100, rotateX: 12 }, { opacity: 1, y: 0, rotateX: 0, duration: 1.3, stagger: 0.1 }, 0.4);
-        introTl.fromTo('.hero-subtitle-line', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.9 }, 0.9);
+        introTl.fromTo('.hero-brand-line', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.9, delay: 0.2 }, 0);
+        introTl.fromTo('.hero-title-row', { opacity: 0, y: 42 }, { opacity: 1, y: 0, duration: 1.1, stagger: 0.1 }, 0.35);
+        introTl.fromTo('.hero-subtitle-line', { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.8 }, 0.78);
         introTl.fromTo('.hero-scroll-cue', { opacity: 0 }, { opacity: 1, duration: 1 }, 1.2);
       };
 
@@ -318,7 +323,10 @@ export default function useHeroSceneAnimationFrames({
 
           const frameIndex = Math.max(
             0,
-            Math.min(Math.round(renderedFrameRef.current), HERO_SEQUENCE_FRAME_COUNT - 1)
+            Math.min(
+              Math.round(renderedFrameRef.current),
+              Math.min(highestLoadedFrameRef.current, HERO_SEQUENCE_FRAME_COUNT - 1)
+            )
           );
           drawFrameByIndex(frameIndex);
         }
@@ -328,6 +336,7 @@ export default function useHeroSceneAnimationFrames({
 
       playActiveLoop();
       resizeCanvas();
+      onTextIntroReady?.();
       runIntro();
       void preloadSequence();
       rafIdRef.current = requestAnimationFrame(tick);
@@ -383,5 +392,6 @@ export default function useHeroSceneAnimationFrames({
     exitRef,
     vignetteRef,
     smokeRef,
+    onTextIntroReady,
   ]);
 }

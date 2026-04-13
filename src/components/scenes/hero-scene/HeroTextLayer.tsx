@@ -18,14 +18,18 @@ const HeroTextLayer = React.forwardRef<HTMLDivElement, HeroTextLayerProps>(
         </div>
 
         <div className="hero-title-block">
-          <span className="hero-title-word hero-title-word--xl">{d('hero.word1', lang)}</span>
-          <span className="hero-title-word hero-title-word--xl hero-title-word--offset">
-            {d('hero.word2', lang)}
-          </span>
-          <span className="hero-title-word hero-title-word--xxl">{d('hero.word3', lang)}</span>
-          <span className="hero-title-word hero-title-word--xl hero-title-word--italic hero-title-word--accent">
-            {d('hero.word4', lang)}
-          </span>
+          <div className="hero-title-row">
+            <span className="hero-title-word hero-title-word--xl">{d('hero.word1', lang)}</span>
+            <span className="hero-title-word hero-title-word--xl hero-title-word--offset">
+              {d('hero.word2', lang)}
+            </span>
+          </div>
+          <div className="hero-title-row hero-title-row--accent">
+            <span className="hero-title-word hero-title-word--xxl">{d('hero.word3', lang)}</span>
+            <span className="hero-title-word hero-title-word--xl hero-title-word--italic hero-title-word--accent">
+              {d('hero.word4', lang)}
+            </span>
+          </div>
         </div>
 
         <div className="hero-subtitle-line">
@@ -43,4 +47,3 @@ const HeroTextLayer = React.forwardRef<HTMLDivElement, HeroTextLayerProps>(
 HeroTextLayer.displayName = 'HeroTextLayer';
 
 export default HeroTextLayer;
-

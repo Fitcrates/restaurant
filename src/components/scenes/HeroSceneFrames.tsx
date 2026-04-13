@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import HeroMediaLayerFrames from './hero-scene/HeroMediaLayerFrames';
 import HeroOverlayLayer from './hero-scene/HeroOverlayLayer';
@@ -32,8 +32,58 @@ export default function HeroSceneFrames({
   const exitRef = useRef<HTMLDivElement>(null);
   const vignetteRef = useRef<HTMLDivElement>(null);
   const smokeRef = useRef<HTMLDivElement>(null);
+  const [shouldLoadMotionMedia, setShouldLoadMotionMedia] = useState(false);
+  const [idleMediaReady, setIdleMediaReady] = useState(false);
+  const [textIntroReady, setTextIntroReady] = useState(false);
 
   useEffect(() => {
+    const isMobileViewport = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    let idleId: number | null = null;
+    const requestIdle =
+      typeof window.requestIdleCallback === 'function'
+        ? window.requestIdleCallback.bind(window)
+        : null;
+    const cancelIdle =
+      typeof window.cancelIdleCallback === 'function'
+        ? window.cancelIdleCallback.bind(window)
+        : null;
+
+    const loadMotionMedia = () => {
+      setShouldLoadMotionMedia(true);
+    };
+
+    const scheduleLoad = () => {
+      if (requestIdle) {
+        idleId = requestIdle(loadMotionMedia, {
+          timeout: isMobileViewport ? 2200 : 800,
+        });
+        return;
+      }
+
+      timeoutId = setTimeout(loadMotionMedia, isMobileViewport ? 900 : 180);
+    };
+
+    if (document.readyState === 'complete') {
+      scheduleLoad();
+    } else {
+      window.addEventListener('load', scheduleLoad, { once: true });
+    }
+
+    return () => {
+      window.removeEventListener('load', scheduleLoad);
+      if (idleId !== null && cancelIdle) {
+        cancelIdle(idleId);
+      }
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!shouldLoadMotionMedia) return;
+
     const loopA = loopVideoARef.current;
     const loopB = loopVideoBRef.current;
 
@@ -66,7 +116,7 @@ export default function HeroSceneFrames({
       document.removeEventListener('visibilitychange', ensurePlayback);
       window.removeEventListener('pageshow', ensurePlayback);
     };
-  }, []);
+  }, [shouldLoadMotionMedia]);
 
   useHeroSceneAnimationFrames({
     sceneRef,
@@ -78,15 +128,24 @@ export default function HeroSceneFrames({
     exitRef,
     vignetteRef,
     smokeRef,
+    onTextIntroReady: () => setTextIntroReady(true),
   });
 
   return (
-    <section ref={sceneRef} className="hero-scene" id="hero" aria-label={heading || undefined}>
+    <section
+      ref={sceneRef}
+      className={`hero-scene hero-scene--frames${textIntroReady ? ' is-text-ready' : ''}`}
+      id="hero"
+      aria-label={heading || undefined}
+    >
       <HeroMediaLayerFrames
         loopVideoARef={loopVideoARef}
         loopVideoBRef={loopVideoBRef}
         loopStackRef={loopStackRef}
         sequenceCanvasRef={sequenceCanvasRef}
+        shouldLoadMotionMedia={shouldLoadMotionMedia}
+        idleMediaReady={idleMediaReady}
+        onIdleMediaReady={() => setIdleMediaReady(true)}
       />
 
       <div ref={stageRef} className="hero-stage">
