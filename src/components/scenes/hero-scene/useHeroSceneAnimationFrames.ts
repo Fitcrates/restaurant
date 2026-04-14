@@ -120,11 +120,13 @@ export default function useHeroSceneAnimationFrames({
       }
     };
 
-    const drawImageCover = (image: HTMLImageElement) => {
+    const drawCoverSource = (
+      source: CanvasImageSource,
+      sourceWidth: number,
+      sourceHeight: number
+    ) => {
       resizeCanvas();
 
-      const sourceWidth = image.naturalWidth || canvas.width;
-      const sourceHeight = image.naturalHeight || canvas.height;
       const canvasWidth = canvas.width;
       const canvasHeight = canvas.height;
       const sourceRatio = sourceWidth / sourceHeight;
@@ -143,17 +145,19 @@ export default function useHeroSceneAnimationFrames({
         offsetY = (sourceHeight - drawHeight) / 2;
       }
 
-      ctx2d.drawImage(
-        image,
-        offsetX,
-        offsetY,
-        drawWidth,
-        drawHeight,
-        0,
-        0,
-        canvasWidth,
-        canvasHeight
-      );
+      ctx2d.drawImage(source, offsetX, offsetY, drawWidth, drawHeight, 0, 0, canvasWidth, canvasHeight);
+    };
+
+    const drawImageCover = (image: HTMLImageElement) => {
+      const sourceWidth = image.naturalWidth || canvas.width;
+      const sourceHeight = image.naturalHeight || canvas.height;
+      drawCoverSource(image, sourceWidth, sourceHeight);
+    };
+
+    const drawVideoCover = (video: HTMLVideoElement) => {
+      const sourceWidth = video.videoWidth || canvas.width;
+      const sourceHeight = video.videoHeight || canvas.height;
+      drawCoverSource(video, sourceWidth, sourceHeight);
     };
 
     const drawFrameByIndex = (index: number) => {
@@ -200,12 +204,12 @@ export default function useHeroSceneAnimationFrames({
       }
     };
 
-    const updatePhase = (progress: number, phase: HeroPhase) => {
+    const updatePhase = (progress: number, phase: HeroPhase, hasCanvasSource: boolean) => {
       const loopStack = loopStackRef.current;
       if (!loopStack) return;
 
       const localProgress = phaseProgress(progress, phase);
-      const sequenceVisible = sequenceReadyRef.current;
+      const sequenceVisible = hasCanvasSource;
 
       switch (phase) {
         case 'intro': {
@@ -267,6 +271,19 @@ export default function useHeroSceneAnimationFrames({
     }
 
     const gsapCtx = gsap.context(() => {
+      const normalizeLoopLayers = () => {
+        const [a, b] = getLoops();
+        const active = activeLoopIndexRef.current === 0 ? a : b;
+        const standby = activeLoopIndexRef.current === 0 ? b : a;
+        if (!active || !standby) return;
+
+        gsap.killTweensOf([active, standby]);
+        isLoopCrossfadingRef.current = false;
+        gsap.set(active, { opacity: 1, scale: 1 });
+        gsap.set(standby, { opacity: 0, scale: 1 });
+        standby.pause();
+      };
+
       const runIntro = () => {
         const introTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
         const [loopA] = getLoops();
@@ -300,14 +317,30 @@ export default function useHeroSceneAnimationFrames({
         }
 
         const phase = getPhase(renderedProgressRef.current);
-        updatePhase(renderedProgressRef.current, phase);
-
         const [a, b] = getLoops();
         const active = activeLoopIndexRef.current === 0 ? a : b;
+        const shouldUseVideoFallback =
+          !sequenceReadyRef.current &&
+          !sequenceUnavailableRef.current &&
+          phase !== 'intro' &&
+          Boolean(active && active.readyState >= 2 && active.videoWidth > 0 && active.videoHeight > 0);
+
+        if (shouldUseVideoFallback && active) {
+          drawVideoCover(active);
+          drawnFrameIndexRef.current = -1;
+        }
+
+        updatePhase(renderedProgressRef.current, phase, sequenceReadyRef.current || shouldUseVideoFallback);
+
+        if ((phase === 'flip' || phase === 'hold' || phase === 'exit') && isLoopCrossfadingRef.current) {
+          normalizeLoopLayers();
+        }
+
         if (
           active &&
           active.duration > 0 &&
           !isLoopCrossfadingRef.current &&
+          (phase === 'intro' || phase === 'crossfade') &&
           active.currentTime >= active.duration - 2.5
         ) {
           startLoopCrossfade();
