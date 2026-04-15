@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import HeroMediaLayerFrames from './hero-scene/HeroMediaLayerFrames';
 import HeroOverlayLayer from './hero-scene/HeroOverlayLayer';
@@ -20,18 +20,16 @@ export default function HeroSceneFrames({
   tagline,
   subtitle,
 }: HeroSceneFramesProps) {
-  const sceneRef = useRef<HTMLElement>(null);
-  const stageRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLDivElement>(null);
+  const sceneRef = React.useRef<HTMLElement>(null);
 
-  const loopVideoARef = useRef<HTMLVideoElement>(null);
-  const loopVideoBRef = useRef<HTMLVideoElement>(null);
-  const loopStackRef = useRef<HTMLDivElement>(null);
-  const sequenceCanvasRef = useRef<HTMLCanvasElement>(null);
-  const gradientRef = useRef<HTMLDivElement>(null);
-  const exitRef = useRef<HTMLDivElement>(null);
-  const vignetteRef = useRef<HTMLDivElement>(null);
-  const smokeRef = useRef<HTMLDivElement>(null);
+  const loopVideoARef = React.useRef<HTMLVideoElement>(null);
+  const loopVideoBRef = React.useRef<HTMLVideoElement>(null);
+  const loopStackRef = React.useRef<HTMLDivElement>(null);
+  const sequenceCanvasRef = React.useRef<HTMLCanvasElement>(null);
+  const gradientRef = React.useRef<HTMLDivElement>(null);
+  const exitRef = React.useRef<HTMLDivElement>(null);
+  const vignetteRef = React.useRef<HTMLDivElement>(null);
+  const smokeRef = React.useRef<HTMLDivElement>(null);
   const [shouldLoadMotionMedia, setShouldLoadMotionMedia] = useState(false);
   const [idleMediaReady, setIdleMediaReady] = useState(false);
   const [textIntroReady, setTextIntroReady] = useState(false);
@@ -136,14 +134,14 @@ export default function HeroSceneFrames({
         onIdleMediaReady={() => setIdleMediaReady(true)}
       />
 
-      <div ref={stageRef} className="hero-stage">
+      <div className="hero-stage">
         <HeroOverlayLayer
           gradientRef={gradientRef}
           exitRef={exitRef}
           vignetteRef={vignetteRef}
           smokeRef={smokeRef}
         />
-        <HeroTextLayer ref={textRef} lang={lang} tagline={tagline} subtitle={subtitle} />
+        <HeroTextLayer lang={lang} tagline={tagline} subtitle={subtitle} />
       </div>
     </section>
   );

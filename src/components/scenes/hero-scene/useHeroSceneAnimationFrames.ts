@@ -1,6 +1,6 @@
 'use client';
 
-import { useLayoutEffect, useRef } from 'react';
+import { useEffectEvent, useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -35,6 +35,9 @@ export default function useHeroSceneAnimationFrames({
   smokeRef,
   onTextIntroReady,
 }: UseHeroSceneAnimationFramesParams) {
+  const emitTextIntroReady = useEffectEvent(() => {
+    onTextIntroReady?.();
+  });
   const activeLoopIndexRef = useRef<0 | 1>(0);
   const isLoopCrossfadingRef = useRef(false);
   const currentPhaseRef = useRef<HeroPhase>('intro');
@@ -180,7 +183,7 @@ export default function useHeroSceneAnimationFrames({
     const preloadSequence = async () => {
       if (sequenceUnavailableRef.current) return;
 
-      const firstFrame = await loadImage('/Frame0.webp').catch(() => null);
+      const firstFrame = await loadImage(HERO_SEQUENCE_SOURCES[0]).catch(() => null);
       if (!firstFrame) {
         sequenceReadyRef.current = false;
         sequenceUnavailableRef.current = true;
@@ -190,17 +193,33 @@ export default function useHeroSceneAnimationFrames({
       imagesRef.current = [firstFrame];
       highestLoadedFrameRef.current = 0;
       sequenceReadyRef.current = true;
+      renderedFrameRef.current = 0;
       drawFrameByIndex(0);
 
-      for (let index = 1; index < HERO_SEQUENCE_FRAME_COUNT; index += 1) {
-        const frame = await loadImage(HERO_SEQUENCE_SOURCES[index]).catch(() => null);
-        if (!frame) {
-          sequenceUnavailableRef.current = true;
-          break;
+      const batchSize = isTouchDevice ? 2 : 4;
+
+      for (let startIndex = 1; startIndex < HERO_SEQUENCE_FRAME_COUNT; startIndex += batchSize) {
+        const batch = await Promise.all(
+          HERO_SEQUENCE_SOURCES.slice(startIndex, startIndex + batchSize).map((src) =>
+            loadImage(src).catch(() => null)
+          )
+        );
+
+        for (let offset = 0; offset < batch.length; offset += 1) {
+          const frame = batch[offset];
+          if (!frame) {
+            sequenceUnavailableRef.current = true;
+            break;
+          }
+
+          const index = startIndex + offset;
+          imagesRef.current[index] = frame;
+          highestLoadedFrameRef.current = index;
         }
 
-        imagesRef.current[index] = frame;
-        highestLoadedFrameRef.current = index;
+        if (sequenceUnavailableRef.current) {
+          break;
+        }
       }
     };
 
@@ -215,46 +234,46 @@ export default function useHeroSceneAnimationFrames({
         case 'intro': {
           gsap.set(loopStack, { opacity: 1, scale: 1 + localProgress * 0.0035 });
           gsap.set(canvas, { opacity: 0, scale: 1 });
-          gsap.set(gradientRef.current, { opacity: 1 + localProgress * 0.18 });
-          gsap.set(vignetteRef.current, { opacity: 1 + localProgress * 0.36 });
+          gsap.set(gradientRef.current, { opacity: 0.92 + localProgress * 0.04 });
+          gsap.set(vignetteRef.current, { opacity: 0.72 + localProgress * 0.08 });
           gsap.set(smokeRef.current, { opacity: 0.08 + localProgress * 0.08, y: -(localProgress * 12) });
           gsap.set(exitRef.current, { opacity: 0 });
           break;
         }
         case 'crossfade': {
-          gsap.set(loopStack, { opacity: 1, scale: 1.002 + localProgress * 0.002 });
-          gsap.set(canvas, { opacity: sequenceVisible ? 0.2 + localProgress * 0.8 : 0, scale: 1.001 + localProgress * 0.002 });
-          gsap.set(gradientRef.current, { opacity: 1.16 + localProgress * 0.18 });
-          gsap.set(vignetteRef.current, { opacity: 1.24 + localProgress * 0.18 });
+          gsap.set(loopStack, { opacity: 1 - localProgress * 0.12, scale: 1.001 + localProgress * 0.002 });
+          gsap.set(canvas, { opacity: sequenceVisible ? 0.12 + localProgress * 0.44 : 0, scale: 1.001 + localProgress * 0.002 });
+          gsap.set(gradientRef.current, { opacity: 0.96 + localProgress * 0.04 });
+          gsap.set(vignetteRef.current, { opacity: 0.8 + localProgress * 0.08 });
           gsap.set(smokeRef.current, { opacity: 0.14 + localProgress * 0.06, y: -12 - localProgress * 14 });
           gsap.set(exitRef.current, { opacity: 0 });
           break;
         }
         case 'flip': {
-          gsap.set(loopStack, { opacity: sequenceVisible ? 1 - localProgress * 0.9 : 1 });
-          gsap.set(canvas, { opacity: sequenceVisible ? 0.72 + localProgress * 0.28 : 0, scale: 1.003 + localProgress * 0.005 });
-          gsap.set(gradientRef.current, { opacity: 1.36 + localProgress * 0.12 });
-          gsap.set(vignetteRef.current, { opacity: 1.42 + localProgress * 0.12 });
-          gsap.set(smokeRef.current, { opacity: 0.22, y: -28 });
+          gsap.set(loopStack, { opacity: sequenceVisible ? 0.88 - localProgress * 0.56 : 1 });
+          gsap.set(canvas, { opacity: sequenceVisible ? 0.46 + localProgress * 0.54 : 0, scale: 1.003 + localProgress * 0.005 });
+          gsap.set(gradientRef.current, { opacity: 1 });
+          gsap.set(vignetteRef.current, { opacity: 0.88 + localProgress * 0.08 });
+          gsap.set(smokeRef.current, { opacity: 0.2 + localProgress * 0.04, y: -22 - localProgress * 6 });
           gsap.set(exitRef.current, { opacity: 0 });
           break;
         }
         case 'hold': {
           gsap.set(loopStack, { opacity: sequenceVisible ? 0 : 1 });
           gsap.set(canvas, { opacity: sequenceVisible ? 1 : 0, scale: 1.008 + localProgress * 0.004 });
-          gsap.set(gradientRef.current, { opacity: 1.48 + localProgress * 0.28 });
-          gsap.set(vignetteRef.current, { opacity: 1.54 + localProgress * 0.16 });
+          gsap.set(gradientRef.current, { opacity: 1 });
+          gsap.set(vignetteRef.current, { opacity: 0.96 + localProgress * 0.04 });
           gsap.set(smokeRef.current, { opacity: 0.24 + localProgress * 0.08, y: -28 - localProgress * 12 });
           gsap.set(exitRef.current, { opacity: 0 });
           break;
         }
         case 'exit': {
           gsap.set(loopStack, { opacity: sequenceVisible ? 0 : 1 });
-          gsap.set(canvas, { opacity: sequenceVisible ? 1 - localProgress * 0.65 : 0, scale: 1.012 + localProgress * 0.004 });
-          gsap.set(gradientRef.current, { opacity: 1.8 });
-          gsap.set(vignetteRef.current, { opacity: 1.68 });
-          gsap.set(smokeRef.current, { opacity: 0.3 - localProgress * 0.14, y: -40 });
-          gsap.set(exitRef.current, { opacity: 0.08 + localProgress * 0.18 });
+          gsap.set(canvas, { opacity: sequenceVisible ? 1 - localProgress * 0.38 : 0, scale: 1.012 + localProgress * 0.004 });
+          gsap.set(gradientRef.current, { opacity: 1 });
+          gsap.set(vignetteRef.current, { opacity: 1 });
+          gsap.set(smokeRef.current, { opacity: 0.28 - localProgress * 0.2, y: -40 });
+          gsap.set(exitRef.current, { opacity: Math.pow(localProgress, 1.2) * 0.92 });
           break;
         }
       }
@@ -262,11 +281,16 @@ export default function useHeroSceneAnimationFrames({
 
     if (prefersReducedMotion) {
       playActiveLoop();
+      emitTextIntroReady();
       gsap.set(loopStackRef.current, { opacity: 1 });
       gsap.set(canvas, { opacity: 0 });
       gsap.set(exitRef.current, { opacity: 0 });
       gsap.set(smokeRef.current, { opacity: 0.08, y: 0 });
       gsap.set(vignetteRef.current, { opacity: 1 });
+      gsap.set('.hero-brand-line, .hero-title-row, .hero-subtitle-line, .hero-scroll-cue', {
+        opacity: 1,
+        y: 0,
+      });
       return;
     }
 
@@ -297,10 +321,10 @@ export default function useHeroSceneAnimationFrames({
           );
         }
 
-        introTl.fromTo('.hero-brand-line', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.9, delay: 0.2 }, 0);
-        introTl.fromTo('.hero-title-row', { opacity: 0, y: 42 }, { opacity: 1, y: 0, duration: 1.1, stagger: 0.1 }, 0.35);
-        introTl.fromTo('.hero-subtitle-line', { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.8 }, 0.78);
-        introTl.fromTo('.hero-scroll-cue', { opacity: 0 }, { opacity: 1, duration: 1 }, 1.2);
+        introTl.to('.hero-brand-line', { opacity: 1, y: 0, duration: 0.9, delay: 0.2 }, 0);
+        introTl.to('.hero-title-row', { opacity: 1, y: 0, duration: 1.1, stagger: 0.1 }, 0.35);
+        introTl.to('.hero-subtitle-line', { opacity: 1, y: 0, duration: 0.8 }, 0.78);
+        introTl.to('.hero-scroll-cue', { opacity: 1, duration: 1 }, 1.2);
       };
 
       const tick = (now: number) => {
@@ -319,8 +343,9 @@ export default function useHeroSceneAnimationFrames({
         const phase = getPhase(renderedProgressRef.current);
         const [a, b] = getLoops();
         const active = activeLoopIndexRef.current === 0 ? a : b;
+        const hasLoadedFirstFrame = highestLoadedFrameRef.current >= 0 && Boolean(imagesRef.current[0]);
         const shouldUseVideoFallback =
-          !sequenceReadyRef.current &&
+          !hasLoadedFirstFrame &&
           !sequenceUnavailableRef.current &&
           phase !== 'intro' &&
           Boolean(active && active.readyState >= 2 && active.videoWidth > 0 && active.videoHeight > 0);
@@ -370,7 +395,7 @@ export default function useHeroSceneAnimationFrames({
       void preloadSequence();
       playActiveLoop();
       resizeCanvas();
-      onTextIntroReady?.();
+      emitTextIntroReady();
       runIntro();
       rafIdRef.current = requestAnimationFrame(tick);
 
@@ -425,6 +450,5 @@ export default function useHeroSceneAnimationFrames({
     exitRef,
     vignetteRef,
     smokeRef,
-    onTextIntroReady,
   ]);
 }

@@ -552,7 +552,7 @@ video {
 }
 
 .hero-scene--frames:not(.is-text-ready) .hero-text-inner {
-  opacity: 0;
+  visibility: hidden;
 }
 
 /* Brand line – top left */
@@ -560,6 +560,8 @@ video {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
 }
 
 .hero-brand-tag {
@@ -592,6 +594,8 @@ video {
   flex-wrap: wrap;
   align-items: baseline;
   gap: clamp(0.5rem, 1.6vw, 1.6rem);
+  opacity: 0;
+  transform: translate3d(0, 42px, 0);
 }
 
 .hero-title-row--accent {
@@ -636,6 +640,8 @@ video {
   justify-content: space-between;
   align-items: flex-end;
   gap: 2rem;
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
 }
 
 .hero-subtitle-text {
@@ -651,6 +657,7 @@ video {
   align-items: center;
   gap: 1rem;
   flex-shrink: 0;
+  opacity: 0;
 }
 
 .hero-scroll-label {
@@ -1577,6 +1584,15 @@ video {
   line-height: 1.1;
   text-transform: uppercase;
   margin-bottom: 3rem;
+}
+
+.scene-cta__reveal {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+}
+
+.scene-cta__reveal--form {
+  transform: none;
 }
 
 .cta-button {

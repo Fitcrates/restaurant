@@ -56,19 +56,19 @@ const dict: Dict = {
     'dishes.label': 'Signature Collection',
     'dishes.heading': 'OUR TABLE.',
     'dishes.kobe.name': 'Kobe A5 Striploin',
-    'dishes.kobe.desc': 'Uncompromising marbling, served with local sea salt and wasabi.',
+    'dishes.kobe.desc': 'A5 striploin tempered slowly, kissed over binchotan for seconds, then finished with sea salt and fresh wasabi.',
     'dishes.gejang.name': 'Ganjang Gejang',
-    'dishes.gejang.desc': 'Raw crab marinated in artisanal soy sauce for 3 days.',
+    'dishes.gejang.desc': 'A Seoul coastal classic. Blue crab cured for 72 hours in soy, kelp, and citrus until the flesh turns silk-soft.',
     'dishes.samgyeopsal.name': 'Heritage Samgyeopsal',
-    'dishes.samgyeopsal.desc': 'Thick-cut mountain pork belly with house-made ssamjang.',
+    'dishes.samgyeopsal.desc': 'Heritage pork belly, cut thick and grilled tableside, meant to be wrapped with ssamjang, herbs, and warm rice.',
     'dishes.bulgogi.name': 'Wagyu Bulgogi',
-    'dishes.bulgogi.desc': 'Marinated in pear and soy. Grilled over binchotan.',
+    'dishes.bulgogi.desc': 'Inspired by old Seoul bulgogi houses: wagyu sliced thin, marinated in pear and soy, then flashed over charcoal.',
     'dishes.galbi.name': 'Galbi-jjim',
-    'dishes.galbi.desc': 'Slow-braised short ribs. 8 hours. Complex and tender.',
+    'dishes.galbi.desc': 'Short ribs braised low for eight hours in stock, soy, and aromatics until the glaze turns dark, rich, and glossy.',
     'dishes.japchae.name': 'Japchae',
-    'dishes.japchae.desc': 'Sweet potato noodles with seasonal vegetables, sesame oil finish.',
+    'dishes.japchae.desc': 'Once reserved for Korean royal banquets, glass noodles are tossed to order with vegetables and toasted sesame oil.',
     'dishes.doenjang.name': 'Doenjang Jjigae',
-    'dishes.doenjang.desc': 'Fermented soybean stew. Deep, earthy, comforting.',
+    'dishes.doenjang.desc': 'House-fermented soybean stew built patiently with anchovy stock, tofu, and vegetables for deep everyday comfort.',
 
     /* ── Closeups ── */
     'closeups.focusLabel': 'FOCUS',
@@ -180,19 +180,19 @@ const dict: Dict = {
     'dishes.label': 'Kolekcja Szefa Kuchni',
     'dishes.heading': 'NASZ STÓŁ.',
     'dishes.kobe.name': 'Kobe A5 Striploin',
-    'dishes.kobe.desc': 'Niezrównany marmur, podawany z morską solą i wasabi.',
+    'dishes.kobe.desc': 'A5 striploin odpoczywa do temperatury serwisu, trafia nad binchotan tylko na chwilę i wykańczany jest solą morską oraz świeżym wasabi.',
     'dishes.gejang.name': 'Ganjang Gejang',
-    'dishes.gejang.desc': 'Surowy krab marynowany w rzemieślniczym sosie sojowym przez 3 dni.',
+    'dishes.gejang.desc': 'Klasyk koreańskiego wybrzeża. Krab dojrzewa 72 godziny w sosie sojowym z kombu i cytrusami, aż mięso staje się jedwabiście miękkie.',
     'dishes.samgyeopsal.name': 'Heritage Samgyeopsal',
-    'dishes.samgyeopsal.desc': 'Grubo krojony boczek z górskiej wieprzowiny z domowym ssamjang.',
+    'dishes.samgyeopsal.desc': 'Grubo cięty boczek z wieprzowiny heritage grillowany przy stole, podawany do zawijania z ssamjang, ziołami i ciepłym ryżem.',
     'dishes.bulgogi.name': 'Wagyu Bulgogi',
-    'dishes.bulgogi.desc': 'Marynowany w gruszce i soi. Grillowany na binchotanie.',
+    'dishes.bulgogi.desc': 'Ukłon w stronę dawnych domów bulgogi w Seulu: cienko krojone wagyu marynowane w gruszce i soi, krótko opalane nad węglem.',
     'dishes.galbi.name': 'Galbi-jjim',
-    'dishes.galbi.desc': 'Wolno duszone żeberka. 8 godzin. Złożony i kruchy smak.',
+    'dishes.galbi.desc': 'Żeberka duszone osiem godzin w wywarze, sosie sojowym i aromatach, aż sos staje się ciemny, lśniący i głęboki.',
     'dishes.japchae.name': 'Japchae',
-    'dishes.japchae.desc': 'Makaron ze słodkich ziemniaków z sezonowymi warzywami, wykończony olejem sezamowym.',
+    'dishes.japchae.desc': 'Danie niegdyś obecne na królewskich ucztach. Makaron ze słodkich ziemniaków mieszany na bieżąco z warzywami i prażonym olejem sezamowym.',
     'dishes.doenjang.name': 'Doenjang Jjigae',
-    'dishes.doenjang.desc': 'Gulasz z fermentowanej pasty sojowej. Głęboki, ziemisty, kojący.',
+    'dishes.doenjang.desc': 'Domowy jjigae na fermentowanej paście sojowej, budowany cierpliwie na wywarze z anchois, tofu i warzywach dla codziennego comfort food.',
 
     /* ── Closeups ── */
     'closeups.focusLabel': 'KADR',
@@ -304,19 +304,19 @@ const dict: Dict = {
     'dishes.label': '시그니처 컬렉션',
     'dishes.heading': '우리의 식탁.',
     'dishes.kobe.name': '고베 A5 스트립로인',
-    'dishes.kobe.desc': '타협하지 않는 마블링, 천일염과 생와사비를 곁들임.',
+    'dishes.kobe.desc': 'A5 스트립로인을 천천히 온도 맞춘 뒤 비장탄 위에서 몇 초만 구워 천일염과 생와사비로 마무리합니다.',
     'dishes.gejang.name': '간장게장',
-    'dishes.gejang.desc': '수제 간장에 3일간 숙성시킨 생꽃게.',
+    'dishes.gejang.desc': '서울에서도 사랑받는 해안의 고전. 꽃게를 간장, 다시마, 감귤 향과 함께 72시간 숙성해 살을 비단처럼 부드럽게 만듭니다.',
     'dishes.samgyeopsal.name': '전통 삼겹살',
-    'dishes.samgyeopsal.desc': '수제 쌈장과 함께 제공되는 두툼한 산지 흑돼지 삼겹살.',
+    'dishes.samgyeopsal.desc': '두껍게 썬 헤리티지 삼겹살을 테이블에서 구워 수제 쌈장, 허브, 따뜻한 밥과 함께 싸 먹도록 냅니다.',
     'dishes.bulgogi.name': '와규 불고기',
-    'dishes.bulgogi.desc': '배와 간장으로 양념하여 비장탄에 구워낸 불고기.',
+    'dishes.bulgogi.desc': '옛 서울 불고기집에서 영감을 받은 방식으로, 얇게 썬 와규를 배와 간장에 재운 뒤 숯불에 빠르게 올립니다.',
     'dishes.galbi.name': '갈비찜',
-    'dishes.galbi.desc': '8시간 동안 천천히 끓여낸 소갈비. 깊고 부드러운 맛.',
+    'dishes.galbi.desc': '소갈비를 육수, 간장, 향채와 함께 8시간 동안 천천히 조려 윤기 있고 깊은 맛의 글레이즈를 만듭니다.',
     'dishes.japchae.name': '잡채',
-    'dishes.japchae.desc': '제철 채소와 참기름으로 마무리한 고구마 당면.',
+    'dishes.japchae.desc': '한때 궁중 잔칫상에 오르던 요리로, 고구마 당면을 채소와 함께 즉석에서 볶아 고소한 참기름으로 마무리합니다.',
     'dishes.doenjang.name': '된장찌개',
-    'dishes.doenjang.desc': '전통 된장 스튜. 깊고 흙내음이 나는 따뜻한 맛.',
+    'dishes.doenjang.desc': '집에서 끓이듯 천천히 쌓아 올린 된장찌개로, 멸치 육수와 두부, 채소가 일상의 깊은 위로를 만듭니다.',
 
     /* ── Closeups ── */
     'closeups.focusLabel': '초점',
@@ -392,6 +392,7 @@ export function d(key: string, lang: string = 'en'): string {
  * Resolve a Sanity localized field object ({ en, pl }).
  * Falls back: requested locale → English → empty string.
  */
-export const t = (field: any, lang: string): string => {
-  return field?.[lang] || field?.en || '';
+export const t = (field: Partial<Record<Locale, string>> | null | undefined, lang: string): string => {
+  const locale: Locale = lang === 'pl' ? 'pl' : lang === 'ko' ? 'ko' : 'en';
+  return field?.[locale] || field?.en || '';
 };

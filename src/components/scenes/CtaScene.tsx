@@ -48,7 +48,7 @@ export default function CtaScene({
   hoursValue,
 }: CtaSceneProps) {
   const sceneRef = useRef<HTMLElement>(null);
-  const loadTimeRef = useRef(Date.now());
+  const loadTimeRef = useRef(0);
 
   const [form, setForm] = useState({
     name: '', email: '', phone: '', date: '', time: '', guests: '', specialRequests: '', website: '',
@@ -58,27 +58,35 @@ export default function CtaScene({
 
   /* ── GSAP entrance animation ── */
   useLayoutEffect(() => {
+    loadTimeRef.current = Date.now();
+  }, []);
+
+  useLayoutEffect(() => {
     const scene = sceneRef.current;
     if (!scene) return;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
+    if (prefersReducedMotion) {
+      gsap.set(scene.querySelectorAll('.scene-cta__reveal'), { opacity: 1, y: 0 });
+      return;
+    }
 
     const ctx = gsap.context(() => {
-      const els = scene.querySelectorAll('.scene-cta__heading, .reservation-form, .scene-cta__info');
+      const els = scene.querySelectorAll<HTMLElement>('.scene-cta__reveal');
       els.forEach((el, i) => {
-        gsap.fromTo(el,
-          { opacity: 0, y: 30 },
-          {
-            opacity: 1, y: 0, duration: 1, ease: 'power3.out',
-            delay: i * 0.15,
-            clearProps: 'opacity,y,transform',
-            scrollTrigger: {
-              trigger: el,
-              start: 'top 85%',
-              once: true,
-            },
+        const isForm = el.classList.contains('scene-cta__reveal--form');
+
+        gsap.to(el, {
+          opacity: 1,
+          y: 0,
+          duration: isForm ? 0.9 : 1,
+          ease: 'power3.out',
+          delay: i * 0.12,
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 85%',
+            once: true,
           },
-        );
+        });
       });
     }, sceneRef);
 
@@ -155,7 +163,7 @@ export default function CtaScene({
 
   return (
     <section ref={sceneRef} className="scene-cta" id="cta">
-      <h2 className="scene-cta__heading">
+      <h2 className="scene-cta__heading scene-cta__reveal">
         {heading || d('cta.heading', lang)}
       </h2>
 
@@ -172,7 +180,7 @@ export default function CtaScene({
         </div>
       ) : (
         <form
-          className="reservation-form"
+          className="reservation-form scene-cta__reveal scene-cta__reveal--form"
           onSubmit={handleSubmit}
           noValidate
           autoComplete="off"
@@ -332,7 +340,7 @@ export default function CtaScene({
       )}
 
       {/* ── Location & Hours info ── */}
-      <div className="scene-cta__info">
+      <div className="scene-cta__info scene-cta__reveal">
         <div className="scene-cta__info-block">
           <span className="text-meta" style={{ color: 'var(--text-secondary)' }}>
             {locationLabel || d('cta.location.label', lang)}

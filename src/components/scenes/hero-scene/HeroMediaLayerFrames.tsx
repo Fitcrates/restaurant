@@ -1,6 +1,8 @@
 import React from 'react';
 import Image from 'next/image';
 
+import { getHeroSequenceSource } from '@/lib/hero-sequence';
+
 type HeroMediaLayerFramesProps = {
   loopVideoARef: React.RefObject<HTMLVideoElement | null>;
   loopVideoBRef: React.RefObject<HTMLVideoElement | null>;
@@ -20,6 +22,8 @@ export default function HeroMediaLayerFrames({
   idleMediaReady,
   onIdleMediaReady,
 }: HeroMediaLayerFramesProps) {
+  const heroPosterSrc = getHeroSequenceSource(0);
+
   const applyVideoFlags = (video: HTMLVideoElement) => {
     video.muted = true;
     video.defaultMuted = true;
@@ -32,7 +36,7 @@ export default function HeroMediaLayerFrames({
     <>
       <div className={`hero-poster-layer${idleMediaReady ? ' is-hidden' : ''}`} aria-hidden="true">
         <Image
-          src="/Frame0.webp"
+          src={heroPosterSrc}
           alt=""
           fill
           preload
@@ -46,7 +50,7 @@ export default function HeroMediaLayerFrames({
           <>
             <video
               ref={loopVideoARef}
-              poster="/Frame0.webp"
+              poster={heroPosterSrc}
               autoPlay
               loop
               muted
@@ -76,7 +80,7 @@ export default function HeroMediaLayerFrames({
 
             <video
               ref={loopVideoBRef}
-              poster="/Frame0.webp"
+              poster={heroPosterSrc}
               autoPlay
               loop
               muted

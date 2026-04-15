@@ -26,13 +26,13 @@ export default function DishesScene({ lang, heading, dishes }: DishesSceneProps)
   const trackRef = useRef<HTMLDivElement>(null);
 
   const defaultDishes: Dish[] = [
-    { name: d('dishes.kobe.name', lang), description: d('dishes.kobe.desc', lang), price: '320 PLN', imageUrl: '/webp/kobe_striploin.webp' },
-    { name: d('dishes.gejang.name', lang), description: d('dishes.gejang.desc', lang), price: '180 PLN', imageUrl: '/webp/ganjang_gejang.webp' },
-    { name: d('dishes.samgyeopsal.name', lang), description: d('dishes.samgyeopsal.desc', lang), price: '110 PLN', imageUrl: '/webp/samgyeopsal.webp' },
-    { name: d('dishes.bulgogi.name', lang), description: d('dishes.bulgogi.desc', lang), price: '160 PLN', imageUrl: '/webp/wagyubulgogi.webp' },
-    { name: d('dishes.galbi.name', lang), description: d('dishes.galbi.desc', lang), price: '140 PLN', imageUrl: '/webp/galbi.webp' },
-    { name: d('dishes.japchae.name', lang), description: d('dishes.japchae.desc', lang), price: '65 PLN', imageUrl: '/webp/japchae.webp' },
-    { name: d('dishes.doenjang.name', lang), description: d('dishes.doenjang.desc', lang), price: '55 PLN', imageUrl: '/webp/doenjang.webp' },
+    { name: d('dishes.kobe.name', lang), description: d('dishes.kobe.desc', lang), imageUrl: '/webp/kobe_striploin.webp' },
+    { name: d('dishes.gejang.name', lang), description: d('dishes.gejang.desc', lang), imageUrl: '/webp/ganjang_gejang.webp' },
+    { name: d('dishes.samgyeopsal.name', lang), description: d('dishes.samgyeopsal.desc', lang), imageUrl: '/webp/samgyeopsal.webp' },
+    { name: d('dishes.bulgogi.name', lang), description: d('dishes.bulgogi.desc', lang), imageUrl: '/webp/wagyubulgogi.webp' },
+    { name: d('dishes.galbi.name', lang), description: d('dishes.galbi.desc', lang), imageUrl: '/webp/galbi.webp' },
+    { name: d('dishes.japchae.name', lang), description: d('dishes.japchae.desc', lang), imageUrl: '/webp/japchae.webp' },
+    { name: d('dishes.doenjang.name', lang), description: d('dishes.doenjang.desc', lang), imageUrl: '/webp/doenjang.webp' },
   ];
 
   const displayDishes = dishes && dishes.length > 0 ? dishes : defaultDishes;
@@ -98,9 +98,6 @@ export default function DishesScene({ lang, heading, dishes }: DishesSceneProps)
                 <div className="scene-dishes__card-info">
                   <h3 className="scene-dishes__card-name">{dish.name}</h3>
                   <p className="scene-dishes__card-desc">{dish.description}</p>
-                  {dish.price && (
-                    <span className="scene-dishes__card-price">{dish.price}</span>
-                  )}
                 </div>
               </div>
             ))}
