@@ -1,11 +1,14 @@
 'use client';
 
-import { useLayoutEffect, useRef } from 'react';
+import { useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
 import { d } from '@/lib/utils/i18n';
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger, useGSAP);
+}
 
 interface ProcessStep {
   title: string;
@@ -30,54 +33,45 @@ export default function ProcessScene({ lang, steps }: ProcessSceneProps) {
 
   const processSteps = steps && steps.length > 0 ? steps : defaultSteps;
 
-  useLayoutEffect(() => {
+  useGSAP(() => {
     const scene = sceneRef.current;
     if (!scene) return;
 
-    const ctx = gsap.context(() => {
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      // On mobile, skip sticky behavior — just show all steps
-      const mm = gsap.matchMedia();
+    // On mobile, skip sticky behavior — just show all steps
+    const mm = gsap.matchMedia();
 
-      mm.add('(min-width: 769px)', () => {
-        if (prefersReducedMotion) return;
+    mm.add('(min-width: 769px)', () => {
+      if (prefersReducedMotion) return;
 
-        const leftCol = scene.querySelector('.scene-process__left');
-        const panels = scene.querySelectorAll('.scene-process__image-panel');
-        const stepElements = scene.querySelectorAll('.scene-process__step');
+      const panels = scene.querySelectorAll('.scene-process__image-panel');
+      const stepElements = scene.querySelectorAll('.scene-process__step');
 
+      // CSS `position: sticky` handles the pinning of the left column natively.
+      // We removed the GSAP pin on `.scene-process__left` to avoid conflict with CSS grid and sticky positioning.
+
+      // Make first step active by default
+      stepElements[0]?.classList.add('is-active');
+
+      panels.forEach((panel, i) => {
         ScrollTrigger.create({
-          trigger: scene,
-          start: 'top top',
-          end: 'bottom bottom',
-          pin: leftCol,
-          pinSpacing: false,
-        });
-
-        // Make first step active by default
-        stepElements[0]?.classList.add('is-active');
-
-        panels.forEach((panel, i) => {
-          ScrollTrigger.create({
-            trigger: panel,
-            start: 'top center',
-            end: 'bottom center',
-            onEnter: () => {
-              stepElements.forEach(s => s.classList.remove('is-active'));
-              stepElements[i]?.classList.add('is-active');
-            },
-            onEnterBack: () => {
-              stepElements.forEach(s => s.classList.remove('is-active'));
-              stepElements[i]?.classList.add('is-active');
-            },
-          });
+          trigger: panel,
+          start: 'top center',
+          end: 'bottom center',
+          onEnter: () => {
+            stepElements.forEach(s => s.classList.remove('is-active'));
+            stepElements[i]?.classList.add('is-active');
+          },
+          onEnterBack: () => {
+            stepElements.forEach(s => s.classList.remove('is-active'));
+            stepElements[i]?.classList.add('is-active');
+          },
         });
       });
-    }, sceneRef);
+    });
 
-    return () => ctx.revert();
-  }, [processSteps.length]);
+  }, { scope: sceneRef, dependencies: [processSteps.length] });
 
   return (
     <div ref={sceneRef} className="scene-process" id="process">

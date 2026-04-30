@@ -44,7 +44,7 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* scroll-behavior: smooth; Disabled because it severely conflicts with GSAP ScrollTrigger pinning */
 }
 
 html,
@@ -52,9 +52,12 @@ body {
   background-color: var(--bg-base);
   color: var(--text-primary);
   font-family: var(--font-suit);
-  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+  overflow-x: clip;
 }
 
 html[lang='pl'] body {

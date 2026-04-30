@@ -1,11 +1,14 @@
 'use client';
 
-import { useLayoutEffect, useRef } from 'react';
+import { useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
 import { d } from '@/lib/utils/i18n';
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger, useGSAP);
+}
 
 interface Dish {
   name: string;
@@ -37,22 +40,23 @@ export default function DishesScene({ lang, heading, dishes }: DishesSceneProps)
 
   const displayDishes = dishes && dishes.length > 0 ? dishes : defaultDishes;
 
-  useLayoutEffect(() => {
+  useGSAP(() => {
     const wrapper = wrapperRef.current;
-    const scene = sceneRef.current;
     const track = trackRef.current;
-    if (!wrapper || !scene || !track) return;
+    if (!wrapper || !track) return;
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
-    const ctx = gsap.context(() => {
-      const mm = gsap.matchMedia();
+    const mm = gsap.matchMedia();
 
-      mm.add('(min-width: 769px)', () => {
-        // Calculate scrollWidth dynamically in functions to avoid stale closures
-        const getScrollWidth = () => track.scrollWidth - window.innerWidth + 100;
+    mm.add('(min-width: 769px)', () => {
+      // Calculate scrollWidth dynamically in functions to avoid stale closures
+      // Ensure we don't return a negative value, which breaks the `end` property
+      const getScrollWidth = () => Math.max(0, track.scrollWidth - window.innerWidth + 100);
 
+      // Only initialize ScrollTrigger if there is actual overflow to scroll
+      if (getScrollWidth() > 0) {
         gsap.fromTo(track,
           { x: 0 },
           {
@@ -64,15 +68,22 @@ export default function DishesScene({ lang, heading, dishes }: DishesSceneProps)
               end: () => `+=${getScrollWidth()}`,
               scrub: 1,
               pin: true,
+              anticipatePin: 1,
               invalidateOnRefresh: true,
             },
           }
         );
-      });
-    }, wrapperRef);
+      }
+    });
 
-    return () => ctx.revert();
-  }, [displayDishes.length]);
+    // Recalculate ScrollTrigger once custom fonts are fully loaded
+    // to prevent layout height shifts from causing trigger jumps
+    if (typeof document !== 'undefined' && document.fonts) {
+      document.fonts.ready.then(() => {
+        ScrollTrigger.refresh();
+      });
+    }
+  }, { scope: wrapperRef, dependencies: [displayDishes.length] });
 
   return (
     <div ref={wrapperRef} className="scene-dishes-wrapper" id="dishes">
